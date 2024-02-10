@@ -11,6 +11,7 @@ stages:
 
 pytest:
   stage: test
+  image: python:3.11
   script:
     - pip install -r requirements.txt
     - pytest --cov=your_package_name --cov-report=xml:cobertura_coverage.xml --junitxml=junit.xml
