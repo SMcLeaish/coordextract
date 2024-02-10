@@ -6,8 +6,26 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- test
-sast:
+  - test
+  - sast
+
+pytest:
   stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
+  script:
+    - pip install -r requirements.txt
+    - pytest --cov=your_package_name --cov-report=xml:cobertura_coverage.xml --junitxml=junit.xml
+  artifacts:
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura_coverage.xml
+
+sast:
+  stage: sast
+  script:
+    - echo "Running SAST..."
+  needs:
+    - job: pytest
+      artifacts: false
+
