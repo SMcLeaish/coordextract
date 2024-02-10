@@ -1,7 +1,7 @@
 """Module for parsing GPX files and extracting geographical data.
 
 Example usage:
-    from gpx_parser import async_parse_gpx
+    from mgrs_processing.parsers.gpx_parse import async_parse_gpx
     
     waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
@@ -47,6 +47,9 @@ async def async_parse_gpx(gpx_file_path: str
         if not xml_data.strip():
             logging.error("GPX file is empty or unreadable: %s", gpx_file_path)
             return [], [], []
+        #xml_data_str = xml_data.decode('utf-8')
+        # debug unit test error "data must be string"
+        print(type(xml_data))
         xml = etree.fromstring(xml_data, parser)
     except IOError:
         logging.exception("Error opening or reading file")
