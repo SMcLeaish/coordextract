@@ -1,45 +1,50 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 stages:
   - pre
   - test
   - sast
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
+
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .venv/
+    - .pip_cache/
 
 prepare_environment:
-  stage: pre
   image: python:3.11
+  stage: pre
   script:
     - python -m venv .venv
     - source .venv/bin/activate
-    - pip install --cache-dir .pip_cache -r requirements.txt
+    - pip install -r requirements.txt
     - pip install -e .
   cache:
-    key: ${CI_COMMIT_REF_SLUG}
-    paths:
-      - .venv/
     policy: push
-mypy:
-  stage: test
+  only:
+    - merge_requests
+
+quality:
   image: python:3.11
+  stage: test
   script: 
     - source .venv/bin/activate
     - mypy --strict mgrs_processing --junit-xml mypy.xml
+    - pylint mgrs_processing
   artifacts:
     reports:
       junit: mypy.xml
   allow_failure: false
+  only:
+    - merge_requests
+
 pytest:
-  stage: test
   image: python:3.11
+  stage: test
   script:
     - source .venv/bin/activate
     - pytest --cov=mgrs_processing --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
@@ -51,12 +56,5 @@ pytest:
         coverage_format: cobertura
         path: cobertura_coverage.xml
   allow_failure: false
-
-sast:
-  stage: sast
-  script:
-    - echo "Running SAST..."
-  needs:
-    - job: pytest
-      artifacts: false
-
+  only:
+    - merge_requests
