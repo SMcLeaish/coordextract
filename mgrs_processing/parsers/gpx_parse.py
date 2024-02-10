@@ -4,12 +4,13 @@ This module provides functionality to parse GPX files,
 extracting waypoints, trackpoints, and routepoints. 
 
 Example usage:
-    from gpx_parser import parse_gpx_geo_data
+    from gpx_parser import async_parse_gpx
     
-    waypoints, trackpoints, routepoints = parse_gpx_geo_data("path/to/your/file.gpx")
+    waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
+from typing import Tuple, List, Optional
 import logging
-from typing import Tuple, List, Optional, String
+import aiofiles
 from lxml import etree
 
 Coordinates = Tuple[float, float]
@@ -31,7 +32,7 @@ def parse_point(point: etree._Element) -> Optional [Tuple[float, float]]:
     except ValueError as e:
         logging.error(f"Invalid coordinate value: {e}")
     return None
-def parse_gpx_geo_data(gpx_file_path: String
+async def async_parse_gpx(gpx_file_path: str
     )-> Tuple[CoordinatesList, CoordinatesList, CoordinatesList]:
     """
     Function that receives a GPX file as input and returns lists of waypoints, trackpoints, and routepoints.
@@ -42,18 +43,27 @@ def parse_gpx_geo_data(gpx_file_path: String
     - Tuple containing three lists of tuples (float, float): waypoints, trackpoints, and routepoints.
     """
     parser = etree.XMLParser(resolve_entities=False, no_network=True, huge_tree=False)
-    try: 
-        with open(gpx_file_path, 'rb') as file:
-            xml = etree.parse(file, parser)
+    try:
+        async with aiofiles.open(gpx_file_path, 'rb') as file:
+            xml_data = await file.read()
+        if not xml_data.strip():
+            logging.error(f"GPX file is empty or unreadable: {gpx_file_path}")
+            return [], [], []
+        xml = etree.fromstring(xml_data, parser)
     except IOError as e:
         logging.error(f"Error opening or reading file: {e}")
         return [], [], []
-    gpx_version = xml.getroot().get("version")
+    except etree.XMLSyntaxError as e:
+        logging.error(f"XML syntax error in the file: {e}")
+        return [], [], []
+
+    gpx_version = xml.get("version")
     if gpx_version not in ["1.0", "1.1"]:
         logging.error(f"Unsupported GPX version: {gpx_version}")
         return [], [], []
-    ns_map = {'gpx': f'http://www.topografix.com/GPX/{gpx_version}'}
-    
+    root_tag = xml.tag
+    namespace_uri = root_tag[root_tag.find('{')+1 : root_tag.find('}')]
+    ns_map = {'gpx': namespace_uri}
     waypoints = [parse_point(wpt) for wpt in xml.findall('.//gpx:wpt', namespaces=ns_map) if parse_point(wpt) is not None]
     trackpoints = [parse_point(trkpt) for trkpt in xml.findall('.//gpx:trkpt', namespaces=ns_map) if parse_point(trkpt) is not None]
     routepoints = [parse_point(rtept) for rtept in xml.findall('.//gpx:rtept', namespaces=ns_map) if parse_point(rtept) is not None]

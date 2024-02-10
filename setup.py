@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'mgrs-processing=mgrs-processing.cli:main',
+            'mgrs-processing=mgrs_processing.cli:main',
         ],
     },
 )
