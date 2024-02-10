@@ -11,7 +11,7 @@ import aiofiles
 from lxml import etree
 
 Coordinates = Tuple[float, float]
-CoordinatesList = List[Coordinates]
+CoordinatesList = List[Optional[Coordinates]]
 
 def parse_point(point: etree._Element) -> Optional [Tuple[float, float]]:
     """
@@ -49,19 +49,14 @@ async def async_parse_gpx(gpx_file_path: str
             return [], [], []
         #xml_data_str = xml_data.decode('utf-8')
         # debug unit test error "data must be string"
-        print(type(xml_data))
         xml = etree.fromstring(xml_data, parser)
-    except IOError:
+    except OSError:
         logging.exception("Error opening or reading file")
         return [], [], []
     except etree.XMLSyntaxError:
         logging.exception("XML syntax error in the file.")
         return [], [], []
 
-    gpx_version = xml.get("version")
-    if gpx_version not in ["1.0", "1.1"]:
-        logging.error("Unsupported GPX version: %s", gpx_version)
-        return [], [], []
     root_tag = xml.tag
     namespace_uri = root_tag[root_tag.find('{')+1 : root_tag.find('}')]
     ns_map = {'gpx': namespace_uri}

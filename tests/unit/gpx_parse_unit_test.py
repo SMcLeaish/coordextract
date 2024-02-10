@@ -57,12 +57,12 @@ async def test_async_parse_valid_gpx_with_mock():
     </wpt>
     </gpx>"""
 
-    async def mock_async_read(*args, **kwargs):
+    async def mock_async_read(*_args, **_kwargs)-> bytes:
         return mock_file_content
 
     mock_file_obj: MagicMock = MagicMock()
     mock_file_obj.read = mock_async_read
-    aiofiles.threadpool.wrap.register(MagicMock)(
+    aiofiles.threadpool.wrap.register(MagicMock)(# type: ignore
         lambda *args, **kwargs: mock_file_obj
     )
 
@@ -71,23 +71,23 @@ async def test_async_parse_valid_gpx_with_mock():
     assert isinstance(waypoints, list)  
     assert isinstance(trackpoints, list)
     assert isinstance(routepoints, list)
-    assert waypoints != [] 
+    assert waypoints != []
     assert trackpoints == []
     assert routepoints == []
 
 @pytest.mark.asyncio
-async def test_async_parse_empty_gpx_with_mock(caplog):
+async def test_async_parse_empty_gpx_with_mock(caplog: pytest.LogCaptureFixture):
     """
     Uses aiofiles and MagicMock object to mock a file read with empty data
     """
     mock_file_content: bytes = b""
 
-    async def mock_async_read(*args, **kwargs):
+    async def mock_async_read(*_args, **_kwargs)-> bytes:
         return mock_file_content
 
     mock_file_obj: MagicMock = MagicMock()
     mock_file_obj.read = mock_async_read
-    aiofiles.threadpool.wrap.register(MagicMock)(
+    aiofiles.threadpool.wrap.register(MagicMock)( # type: ignore
         lambda *args, **kwargs: mock_file_obj
     )
 
@@ -96,7 +96,49 @@ async def test_async_parse_empty_gpx_with_mock(caplog):
     assert isinstance(waypoints, list)
     assert isinstance(trackpoints, list)
     assert isinstance(routepoints, list)
-    assert waypoints == [] 
+    assert waypoints == []
     assert trackpoints == []
     assert routepoints == []
     assert "GPX file is empty or unreadable" in caplog.text
+
+@pytest.mark.asyncio 
+async def test_async_parse_invalid_gpx_data_with_mock(caplog: pytest.LogCaptureFixture):
+    """
+    Uses aiofiles and MagicMock object to mock a file read with gpx syntax error
+    """
+    mock_file_content: bytes = b"""<?xml version="9000" encoding="UTF-8"?>
+    <gpx version="1.1" creator="exampleCreator" xmlns="http://www.topografix.com/GPX/1/1">
+    <wpt lat="10.0" lon="-20.0">
+    <name>Test Waypoint</name>
+    <ele>123.45</ele>
+    <time>2021-01-01T00:00:00Z</time>
+    </wpt>
+    """
+
+    async def mock_async_read(*_args, **_kwargs)-> bytes:
+        return mock_file_content
+
+    mock_file_obj: MagicMock = MagicMock()
+    mock_file_obj.read = mock_async_read
+    aiofiles.threadpool.wrap.register(MagicMock)( # type: ignore
+        lambda *args, **kwargs: mock_file_obj
+    )
+
+    with patch('aiofiles.threadpool.sync_open', return_value=MagicMock(return_value=mock_file_obj)):
+        waypoints, trackpoints, routepoints = await async_parse_gpx("dummy_path.gpx")
+    assert isinstance(waypoints, list)
+    assert isinstance(trackpoints, list)
+    assert isinstance(routepoints, list)
+    assert waypoints == []
+    assert trackpoints == []
+    assert routepoints == []
+    assert "XML syntax error in the file."in caplog.text
+@pytest.mark.asyncio
+async def test_async_parse_gpx_raises_os_error_with_mock(caplog: pytest.LogCaptureFixture):
+    """
+    Simulates an OSError on file read.
+    """
+    with patch.object(aiofiles, 'open', side_effect=OSError("Simulated file read error")):
+        result = await async_parse_gpx("path/to/nonexistent/file.gpx")
+        assert result == ([], [], [])
+        assert "Error opening or reading file" in caplog.text
