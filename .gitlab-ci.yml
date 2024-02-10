@@ -6,23 +6,51 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
+  - pre
   - test
   - sast
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .venv/
 
+prepare_environment:
+  stage: pre
+  image: python:3.11
+  script:
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - pip install --cache-dir .pip_cache -r requirements.txt
+    - pip install -e .
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .venv/
+    policy: push
+mypy:
+  stage: test
+  image: python:3.11
+  script: 
+    - source .venv/bin/activate
+    - mypy --strict mgrs_processing --junit-xml mypy.xml
+  artifacts:
+    reports:
+      junit: mypy.xml
+  allow_failure: false
 pytest:
   stage: test
   image: python:3.11
   script:
-    - pip install -r requirements.txt
-    - pip install -e .
-    - pytest --cov=mgrs_processing --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=junit.xml
+    - source .venv/bin/activate
+    - pytest --cov=mgrs_processing --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
-      junit: junit.xml
+      junit: pytest.xml
       coverage_report:
         coverage_format: cobertura
         path: cobertura_coverage.xml
+  allow_failure: false
 
 sast:
   stage: sast

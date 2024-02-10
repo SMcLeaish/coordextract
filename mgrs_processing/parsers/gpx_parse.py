@@ -11,7 +11,7 @@ import aiofiles
 from lxml import etree
 
 Coordinates = Tuple[float, float]
-CoordinatesList = List[Coordinates]
+CoordinatesList = List[Optional[Coordinates]]
 
 def parse_point(point: etree._Element) -> Optional [Tuple[float, float]]:
     """
