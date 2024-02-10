@@ -15,7 +15,7 @@ pytest:
   script:
     - pip install -r requirements.txt
     - pip install -e .
-    - pytest --cov=mgrs_processing --cov-report=xml:cobertura_coverage.xml --junitxml=junit.xml
+    - pytest --cov=mgrs_processing --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=junit.xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
