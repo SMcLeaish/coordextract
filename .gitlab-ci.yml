@@ -1,10 +1,10 @@
 include:
-  - template: Security/SAST.latest.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
 stages:
   - pre
   - test
-
+  - sast
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
 
