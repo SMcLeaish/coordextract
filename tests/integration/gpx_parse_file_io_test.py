@@ -2,7 +2,7 @@
 """
 from pathlib import Path
 import pytest
-from mgrs_processing.parsers.gpx_parse import async_parse_gpx
+from coordextract import async_parse_gpx
 
 @pytest.mark.asyncio
 async def test_async_parse_gpx_empty_file(caplog):
@@ -28,13 +28,6 @@ async def test_async_parse_gpx_valid_file():
        """
     empty_file = Path(__file__).parent.parent / 'data' / 'fells_loop.gpx'
     waypoints, trackpoints, routepoints = await async_parse_gpx(str(empty_file))
-    assert waypoints != [] 
+    assert waypoints != []
     assert trackpoints == []
     assert routepoints != []
-
-
-
-
-
-
-

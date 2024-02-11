@@ -1,8 +1,9 @@
 """
 This module tests the mgrs_conversion functionality with relation to the mgrs library
 """
-from mgrs_processing import latlon_to_mgrs
 import pytest
+from mgrs.core import MGRSError
+from coordextract import latlon_to_mgrs
 
 def test_latlon_to_mgrs_with_valid_data() -> None:
     """
@@ -14,5 +15,6 @@ def test_latlon_to_mgrs_with_invalid_latlon(caplog: pytest.LogCaptureFixture) ->
     """
     Tests latlon_to_mgrs with values outside valid latitude and longitude
     """
-    assert latlon_to_mgrs(900, -900) is None 
+    with pytest.raises(MGRSError):
+        latlon_to_mgrs(900, -900)
     assert "Error converting latitude and longitude to mgrs" in caplog.text, "Should return none and a conversion error"
