@@ -9,7 +9,7 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
   paths:
     - .venv/
     - .pip_cache/
@@ -19,6 +19,7 @@ prepare_environment:
   stage: pre
   script:
     - python -m venv .venv
+    - ls -la .venv 
     - source .venv/bin/activate
     - pip install -r requirements.txt
     - pip install -e .
