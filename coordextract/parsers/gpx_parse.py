@@ -5,6 +5,7 @@ Example usage:
     
     waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
+__all__ = ["async_parse_gpx", "parse_point"]
 from typing import Tuple, List, Optional
 import logging
 import aiofiles

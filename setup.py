@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mgrs-processing',
+    name='coordextract',
     version='0.1.0',
     author='Sean McLeaish',
     author_email='smcleaish@gmail.com',
@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'mgrs-processing=mgrs_processing.cli:main',
+            'coordextract=coordextract.cli:main',
         ],
     },
 )
