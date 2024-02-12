@@ -1,53 +1,56 @@
+
 include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
+
 stages:
-  - pre
+  - prepare
   - test
   - sast
+  - secret_detection
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
+  key: "${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-${CI_JOB_NAME}"
   paths:
     - .venv/
     - .pip_cache/
 
-prepare_environment:
+default:
   image: python:3.11
-  stage: pre
+
+prepare_environment:
+  stage: prepare
   script:
     - python -m venv .venv
-    - ls -la .venv 
     - source .venv/bin/activate
     - pip install -r requirements.txt
     - pip install -e .
   cache:
     policy: push
-  only:
-    - merge_requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
-quality:
-  image: python:3.11
+quality_checks:
   stage: test
   script: 
     - source .venv/bin/activate
-    - mypy --strict coordextract --junit-xml mypy.xml
-    - pylint mgrs_processing
+    - mypy --strict your_package_name
+    - pylint your_package_name
   artifacts:
     reports:
       junit: mypy.xml
   allow_failure: false
-  only:
-    - merge_requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
-pytest:
-  image: python:3.11
+unit_tests:
   stage: test
   script:
     - source .venv/bin/activate
-    - pytest --cov=coordextract --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
+    - pytest --cov=your_package_name --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
@@ -56,5 +59,7 @@ pytest:
         coverage_format: cobertura
         path: cobertura_coverage.xml
   allow_failure: false
-  only:
-    - merge_requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+
