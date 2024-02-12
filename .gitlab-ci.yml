@@ -37,8 +37,8 @@ quality_checks:
   stage: test
   script: 
     - source .venv/bin/activate
-    - mypy --strict your_package_name
-    - pylint your_package_name
+    - mypy --strict coordextract
+    - pylint coordextract
   artifacts:
     reports:
       junit: mypy.xml
@@ -50,7 +50,7 @@ unit_tests:
   stage: test
   script:
     - source .venv/bin/activate
-    - pytest --cov=your_package_name --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
+    - pytest --cov=coordextract --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
