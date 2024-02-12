@@ -24,7 +24,7 @@ def test_latlon_to_mgrs_success(mock_mgrs_success:  Any):
     latitude, longitude = 37.65815587109628, -101.45319156731206
     result = latlon_to_mgrs(latitude, longitude)
     assert result == "14SKG8360370719", "Should return the correct MGRS string for valid inputs"
-    mock_mgrs_success.toMGRS.assert_called_once_with(37.0, -120.0)
+    mock_mgrs_success.toMGRS.assert_called_once_with (37.65815587109628,-101.45319156731206)
 @pytest.fixture
 def mock_mgrs_failure():
     """
