@@ -47,6 +47,7 @@ def test_parse_point_invalid() -> None:
 async def test_async_parse_valid_gpx_with_mock():
     """
     Uses aiofiles and MagicMock object to mock a file read with valid xml data
+    
     """
     mock_file_content: bytes = b"""<?xml version="1.0" encoding="UTF-8"?>
     <gpx version="1.1" creator="exampleCreator" xmlns="http://www.topografix.com/GPX/1/1">

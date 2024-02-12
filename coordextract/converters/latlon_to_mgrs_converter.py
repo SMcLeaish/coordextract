@@ -7,6 +7,7 @@ str 10 digit mgrs
 Example:
 latlon_to_mgrs((20.00, -105.00))
 """
+__all__=["latlon_to_mgrs"]
 import logging
 from typing import Optional
 from mgrs.core import MGRSError

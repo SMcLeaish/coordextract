@@ -32,7 +32,7 @@ quality:
   stage: test
   script: 
     - source .venv/bin/activate
-    - mypy --strict mgrs_processing --junit-xml mypy.xml
+    - mypy --strict coordextract --junit-xml mypy.xml
     - pylint mgrs_processing
   artifacts:
     reports:
@@ -46,7 +46,7 @@ pytest:
   stage: test
   script:
     - source .venv/bin/activate
-    - pytest --cov=mgrs_processing --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
+    - pytest --cov=coordextract --cov-report=xml:cobertura_coverage.xml --cov-report=term --junitxml=pytest.xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
