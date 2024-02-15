@@ -5,16 +5,15 @@ Example usage:
     
     waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
-__all__ = ["async_parse_gpx", "parse_point"]
-from typing import Tuple, List, Optional
+from typing import Tuple
 import logging
 import aiofiles
 from lxml import etree
 
 Coordinates = Tuple[float, float]
-CoordinatesList = List[Optional[Coordinates]]
+CoordinatesList = list[Coordinates]
 
-def parse_point(point: etree._Element) -> Optional [Tuple[float, float]]:
+def parse_point(point: etree._Element) -> Tuple[float, float]:
     """
     Extracts the latitude and longitude from a GPX point element.
     Args:
@@ -30,7 +29,7 @@ def parse_point(point: etree._Element) -> Optional [Tuple[float, float]]:
             return float(lat), float(lon)
     except ValueError:
         logging.exception("Invalid coordinate value encountered.")
-    return None
+    return (float('nan'),float('nan'))
 async def async_parse_gpx(gpx_file_path: str
     )-> Tuple[CoordinatesList, CoordinatesList, CoordinatesList]:
     """

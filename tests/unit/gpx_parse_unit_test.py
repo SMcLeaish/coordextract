@@ -9,7 +9,8 @@ from unittest.mock import MagicMock, patch
 import aiofiles
 import pytest
 from lxml import etree
-from coordextract import async_parse_gpx, parse_point
+from coordextract.parsers import async_parse_gpx
+from coordextract.parsers.gpx_parse import parse_point
 
 @pytest.fixture
 def mock_gpx_point() -> etree._Element:

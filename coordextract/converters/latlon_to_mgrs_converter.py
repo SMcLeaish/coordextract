@@ -9,11 +9,10 @@ latlon_to_mgrs((20.00, -105.00))
 """
 __all__=["latlon_to_mgrs"]
 import logging
-from typing import Optional
 from mgrs.core import MGRSError
 import mgrs
 
-def latlon_to_mgrs(latitude: float, longitude: float) -> Optional[str]:
+def latlon_to_mgrs(latitude: float, longitude: float) -> str:
     """
     Latitude and longintude to mgrs conversion function. 
     Args:

@@ -9,5 +9,5 @@ System (MGRS) representation.
 Usage:
     from coordextract.converters import latlon_to_mgrs
 """
-__all__=["latlon_to_mgrs"]
 from .latlon_to_mgrs_converter import latlon_to_mgrs
+__all__=["latlon_to_mgrs"]

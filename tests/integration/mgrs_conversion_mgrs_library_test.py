@@ -3,7 +3,7 @@ This module tests the mgrs_conversion functionality with relation to the mgrs li
 """
 import pytest
 from mgrs.core import MGRSError
-from coordextract import latlon_to_mgrs
+from coordextract.converters import latlon_to_mgrs
 
 def test_latlon_to_mgrs_with_valid_data() -> None:
     """

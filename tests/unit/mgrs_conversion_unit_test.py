@@ -5,7 +5,7 @@ from typing import Any
 from unittest.mock import patch
 from mgrs.core import MGRSError
 import pytest
-from coordextract import latlon_to_mgrs
+from coordextract.converters import latlon_to_mgrs
 
 @pytest.fixture
 def mock_mgrs_success():

@@ -2,7 +2,7 @@
 """
 from pathlib import Path
 import pytest
-from coordextract import async_parse_gpx
+from coordextract.parsers import async_parse_gpx
 
 @pytest.mark.asyncio
 async def test_async_parse_gpx_empty_file(caplog):

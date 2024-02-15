@@ -14,5 +14,5 @@ Example usage:
     
     waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
-__all__=["async_parse_gpx", "parse_point"]
-from .gpx_parse import async_parse_gpx, parse_point
+from .gpx_parse import async_parse_gpx
+__all__=["async_parse_gpx"]
