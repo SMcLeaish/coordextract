@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'coordextract=coordextract.cli.main:main',
+            'coordextract=coordextract.cli.main:app',
         ],
     },
 )

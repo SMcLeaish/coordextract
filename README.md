@@ -14,6 +14,9 @@
 ### v.0.1.1:
 * added the following packages: coordextract/models, coordextract/factory. 
 * made a new module in coordextract/factory to create objects from the pydantic class defined in coordextract/models
+### v.0.2.0
+* coordextract cli tool 
+usage: `coordextract -f yourfile.gpx` prints an object with all latitude and longitude and mgrs from a gpx file
 ### TODO
 * conversion for other filetypes: kml, csv, xlsx, json
 * cli tool 

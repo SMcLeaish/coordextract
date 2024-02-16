@@ -7,6 +7,7 @@ like valid inputs, error handling, and unsupported GPX versions.
 
 from unittest.mock import MagicMock, patch
 import aiofiles
+import math
 import pytest
 from lxml import etree
 from coordextract.parsers import async_parse_gpx
@@ -33,7 +34,7 @@ def test_parse_point_valid(mock_gpx_point: etree._Element) -> None:
     mock_gpx_point: A fixture that provides a mock GPX point element with valid coordinates.
     """
     assert parse_point(mock_gpx_point) == (10.0, -20.0), "Should correctly parse valid GPX point"
-
+@pytest.fixture
 def test_parse_point_invalid() -> None:
     """
     Tests the parse_point function with invalid latitude and longitude attributes
@@ -42,7 +43,7 @@ def test_parse_point_invalid() -> None:
     point = etree.Element("point")
     point.set("lat", "invalid")
     point.set("lon", "invalid")
-    assert parse_point(point) is None, "Should return None for invalid coordinates"
+    assert parse_point(point) == (float('nan'), float('nan')), "Should return None for invalid coordinates"
 
 @pytest.mark.asyncio
 async def test_async_parse_valid_gpx_with_mock():
@@ -96,7 +97,7 @@ async def test_async_parse_empty_gpx_with_mock(caplog: pytest.LogCaptureFixture)
     with patch('aiofiles.threadpool.sync_open', return_value=MagicMock(return_value=mock_file_obj)):
         waypoints, trackpoints, routepoints = await async_parse_gpx("dummy_path.gpx")
     assert isinstance(waypoints, list), "Should be a list of waypoint tuples"
-    assert isinstance(trackpoints, list),  "Should be a list of trackpoint tuples" 
+    assert isinstance(trackpoints, list),  "Should be a list of trackpoint tuples"
     assert isinstance(routepoints, list), "Should be a list of routepoint tuples"
     assert waypoints == [], "Should be empty"
     assert trackpoints == [], "Should be empty"

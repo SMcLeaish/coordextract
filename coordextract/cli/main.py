@@ -2,7 +2,7 @@ from typing import Optional
 import asyncio
 from typing_extensions import Annotated
 import typer
-from mgrs import MGRS
+from coordextract.converters import latlon_to_mgrs
 from coordextract import filehandler
 
 app = typer.Typer()
@@ -15,7 +15,8 @@ async def process_file(inputfile: str, outputfile: Optional[str]):
         else:
             print(output)
     else:
-        print("File handler returned None. Please check the input file path or filehandler implementation.")
+        print("File handler returned None. \
+            Please check the input file path or filehandler implementation.")
         raise typer.Exit(code=1)
 @app.command()
 def main(
@@ -35,12 +36,11 @@ def main(
     if coords:
         try:
             latitude, longitude = map(float, coords.split(','))
-            m = MGRS()  
-            c = m.toMGRS(latitude, longitude)
-            print(c)
-        except ValueError:
-            print("Invalid latitude and longitude format. Please provide them as quoted comma-separated values.")
-            raise typer.Exit(code=1)
+            print(latlon_to_mgrs(latitude, longitude))
+        except ValueError as exc:
+            print("Invalid latitude and longitude format. \
+                Please provide them as quoted comma-separated values.")
+            raise typer.Exit(code=1) from exc
     elif inputfile:
         asyncio.run(process_file(inputfile,outputfile))
     else:
