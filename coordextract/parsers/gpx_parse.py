@@ -5,6 +5,7 @@ Example usage:
     
     waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
+import math
 from typing import Tuple
 import logging
 import aiofiles
@@ -29,7 +30,7 @@ def parse_point(point: etree._Element) -> Tuple[float, float]:
             return float(lat), float(lon)
     except ValueError:
         logging.exception("Invalid coordinate value encountered.")
-    return (float('nan'),float('nan'))
+    return (math.nan,math.nan)
 async def async_parse_gpx(gpx_file_path: str
     )-> Tuple[CoordinatesList, CoordinatesList, CoordinatesList]:
     """

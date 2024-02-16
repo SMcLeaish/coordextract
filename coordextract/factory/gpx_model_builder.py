@@ -19,14 +19,13 @@ async def process_gpx_to_point_models(gpx_file_path: str) -> list[PointModel]:
                 logging.error\
                     ("Skipping invalid point with coordinates: %s, %s", latitude, longitude)
                 continue
-            else:
-                mgrs = latlon_to_mgrs(latitude, longitude)
-                point_model = PointModel(
-                    name=None,
-                    gpxpoint=point_type,
-                    latitude=latitude,
-                    longitude=longitude,
-                    mgrs=mgrs
-                )
+            mgrs = latlon_to_mgrs(latitude, longitude)
+            point_model = PointModel(
+                name=None,
+                gpxpoint=point_type,
+                latitude=latitude,
+                longitude=longitude,
+                mgrs=mgrs
+            )
             point_models.append(point_model)
     return point_models
