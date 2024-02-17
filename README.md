@@ -9,11 +9,14 @@ coordextract is a Python library and CLI tool for converting latitude and longit
 - Command-line interface (CLI).
 
 ## Installation
+coordextract now uses Poetry for dependency management. To install coordextract, first ensure you have Poetry installed. If not, you can install Poetry by following the instructions on the [Poetry website](https://python-poetry.org/docs/).
 
-To install coordextract, run the following command:
+Once Poetry is installed, you can install coordextract by cloning the repository and using Poetry:
 
 ```shell
-pip install coordextract
+git clone https://github.com/SMcLeaish/coordextract/
+cd coordextract
+poetry install
 ```
 
 ## Usage
@@ -57,6 +60,12 @@ Testing, linting, and type checking are performed with pytest, pylint, and mypy 
 pytest
 pylint coordextract
 mypy coordextract
+```
+
+### Formatting
+This project uses Black for code formatting to ensure a consistent code style. To format your code, run:
+```shell
+poetry run black .
 ```
 
 ### License

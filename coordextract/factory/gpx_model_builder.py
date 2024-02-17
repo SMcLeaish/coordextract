@@ -4,8 +4,6 @@ from coordextract.parsers import async_parse_gpx
 from coordextract.converters import latlon_to_mgrs
 from coordextract.models.point import PointModel
 
-print(async_parse_gpx.__module__)
-
 
 async def process_gpx_to_point_models(gpx_file_path: str) -> list[PointModel]:
     waypoints, trackpoints, routepoints = await async_parse_gpx(gpx_file_path)
