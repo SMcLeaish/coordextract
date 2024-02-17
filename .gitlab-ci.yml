@@ -10,8 +10,6 @@ include:
 
 default:
   image: python:3.10
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 prepare:
   stage: prepare
@@ -19,6 +17,8 @@ prepare:
     - pip install poetry
     - poetry config virtualenvs.create false
     - poetry install
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 qa:
   stage: qa
@@ -31,6 +31,8 @@ test:
   stage: test
   script:
     - poetry run pytest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 sast:
   stage: sast
