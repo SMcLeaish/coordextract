@@ -23,5 +23,7 @@ Example Usage:
 This package aims to be a helpful tool in geospatial analysis, mapping applications, and any project 
 requiring efficient handling of GPS and MGRS data formats.
 """
+
 from .handler import filehandler
-__all__=["filehandler"]
+
+__all__ = ["filehandler"]

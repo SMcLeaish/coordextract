@@ -7,14 +7,16 @@ str 10 digit mgrs
 Example:
 latlon_to_mgrs((20.00, -105.00))
 """
-__all__=["latlon_to_mgrs"]
+
+__all__ = ["latlon_to_mgrs"]
 import logging
 from mgrs.core import MGRSError
 import mgrs
 
+
 def latlon_to_mgrs(latitude: float, longitude: float) -> str:
     """
-    Latitude and longintude to mgrs conversion function. 
+    Latitude and longintude to mgrs conversion function.
     Args:
     Tuple (float, float) (latitude, logitude)
     Returns:

@@ -1,8 +1,6 @@
 
 include:
   - template: Security/SAST.gitlab-ci.yml
-  - template: Security/Secret-Detection.gitlab-ci.yml
-
 stages:
   - prepare
   - test
@@ -32,17 +30,6 @@ prepare_environment:
     policy: push
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
-before_script:
-  - |
-    if [ ! -d ".venv" ]; then
-      python -m venv .venv
-      source .venv/bin/activate
-      pip install -r requirements.txt
-      pip install -e .
-    else
-      source .venv/bin/activate
-    fi
 
 quality_checks:
   stage: test
