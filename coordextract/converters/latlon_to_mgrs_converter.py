@@ -1,5 +1,5 @@
-"""
-This module converts latitude and longitude to mgrs.
+"""This module converts latitude and longitude to mgrs.
+
 Args:
 Tuple (float, float) (latitude,longitude)
 Returns:
@@ -15,8 +15,8 @@ import mgrs
 
 
 def latlon_to_mgrs(latitude: float, longitude: float) -> str:
-    """
-    Latitude and longintude to mgrs conversion function.
+    """Latitude and longintude to mgrs conversion function.
+
     Args:
     Tuple (float, float) (latitude, logitude)
     Returns:

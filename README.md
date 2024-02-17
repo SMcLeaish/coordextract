@@ -3,13 +3,13 @@ coordextract is a Python library and CLI tool for converting latitude and longit
 
 ## Features
 
-- Parse GPX files to extract latitude and longitude data.
+- Parse GPX files to extract latitude and longitude data (csv and kml parsing coming soon).
 - Convert latitude and longitude to MGRS coordinates.
-- Output the converted data in CSV, JSON, or XLSX formats (coming soon).
+- Output the converted data in CSV, JSON, or XLSX formats (coming soon - JSON currently supported).
 - Command-line interface (CLI).
 
 ## Installation
-coordextract now uses Poetry for dependency management. To install coordextract, first ensure you have Poetry installed. If not, you can install Poetry by following the instructions on the [Poetry website](https://python-poetry.org/docs/).
+coordextract uses Poetry for dependency management. To install coordextract, first ensure you have Poetry installed. If not, you can install Poetry by following the instructions on the [Poetry website](https://python-poetry.org/docs/).
 
 Once Poetry is installed, you can install coordextract by cloning the repository and using Poetry:
 

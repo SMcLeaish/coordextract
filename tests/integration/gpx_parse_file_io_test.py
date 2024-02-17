@@ -1,5 +1,4 @@
-"""Pytest unit tests for gpx_parser.
-"""
+"""Pytest unit tests for gpx_parser."""
 
 from pathlib import Path
 import pytest
@@ -9,6 +8,7 @@ from coordextract.parsers import async_parse_gpx
 @pytest.mark.asyncio
 async def test_async_parse_gpx_empty_file(caplog):
     """Passes empty gpx file from tests/data.
+
     Args:
     empty_file: empty .gpx file
     Returns:
@@ -25,6 +25,7 @@ async def test_async_parse_gpx_empty_file(caplog):
 @pytest.mark.asyncio
 async def test_async_parse_gpx_valid_file():
     """Passes empty gpx file from tests/data.
+
     Args:
     valid_file: valid test .gpx file
     Returns:

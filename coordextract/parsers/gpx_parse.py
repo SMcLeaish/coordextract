@@ -2,7 +2,7 @@
 
 Example usage:
     from mgrs_processing.parsers.gpx_parse import async_parse_gpx
-    
+
     waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
 """
 
@@ -17,8 +17,8 @@ CoordinatesList = list[Coordinates]
 
 
 def parse_point(point: etree._Element) -> Tuple[float, float]:
-    """
-    Extracts the latitude and longitude from a GPX point element.
+    """Extracts the latitude and longitude from a GPX point element.
+
     Args:
     point: An lxml Element representing a GPX waypoint, trackpoint, or routepoint.
     Returns:
@@ -38,9 +38,10 @@ def parse_point(point: etree._Element) -> Tuple[float, float]:
 async def async_parse_gpx(
     gpx_file_path: str,
 ) -> Tuple[CoordinatesList, CoordinatesList, CoordinatesList]:
-    """
-    Function that receives a GPX file as input and returns lists of
-    waypoints, trackpoints, and routepoints as tuples of [latitude, longitude].
+    """Function that receives a GPX file as input and returns lists of
+    waypoints, trackpoints, and routepoints as tuples of [latitude,
+    longitude].
+
     Args:
     gpx_file_path (str): Path to the GPX file to be parsed.
     Returns:

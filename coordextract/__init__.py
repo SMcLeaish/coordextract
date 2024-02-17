@@ -1,29 +1,33 @@
-"""
-The coordextract package provides utilities for extracting and converting geographic 
-coordinates from various formats. It simplifies the process of working with geospatial 
-data, particularly focusing on GPX parsing and coordinate conversion to the Military 
-Grid Reference System (MGRS).
+"""This module provides utilities for converting geographic coordinates
+and handling geographic data formats. It offers functionality to convert
+latitude and longitude to Military Grid Reference System (MGRS)
+coordinates, process input files in the GPX format adding MGRS data, and
+export data to JSON format with optional indentation.
 
-Key Features:
-- Parsing GPX files to extract waypoints, trackpoints, and routepoints.
-- Converting latitude and longitude coordinates to MGRS strings.
+For users interested in command-line interaction, this package includes a CLI tool. 
+See the README or use the `--help` option with the CLI tool for usage instructions and options.
 
-These functionalities are exposed at the top level for convenient access, supporting both 
-synchronous and asynchronous workflows.
+Available Functions:
+- latlon_to_mgrs(latitude: float, longitude: float) -> str:
+  Converts a pair of latitude and longitude coordinates to a 10-digit MGRS string.
+
+- inputhandler(filename: str) -> list[PointModel]:
+  Processes an input file based on its MIME type. Currently supports GPX files, converting them 
+  into a list of PointModel instances representing the geographic points.
+
+- outputhandler
+(point_models: list[PointModel], filename: Optional[str], indentation: Optional[int]) -> None:
+  Exports a list of PointModel instances to a JSON file with optional indentation. 
+  If no filename is provided, outputs to stdout.
 
 Example Usage:
-    # Parsing GPX files
-    from coordextract.parsers import async_parse_gpx
-    waypoints, trackpoints, routepoints = async_parse_gpx("path/to/gpx_file.gpx")
-
-    # Converting coordinates to MGRS
-    from coordextract.converters import latlon_to_mgrs
-    mgrs_string = latlon_to_mgrs(34.6195, -117.8319)
-
-This package aims to be a helpful tool in geospatial analysis, mapping applications, and any project 
-requiring efficient handling of GPS and MGRS data formats.
+>>> from coordextract import latlon_to_mgrs, inputhandler, outputhandler
+>>> mgrs_coord = latlon_to_mgrs(20.00, -105.00)
+>>> points = asyncio.run(inputhandler('path/to/file.gpx'))
+>>> outputhandler(points, 'output.json', 2)
 """
 
-from .handler import filehandler
+from .converters import latlon_to_mgrs
+from .handler import inputhandler, outputhandler
 
-__all__ = ["filehandler"]
+__all__ = ["inputhandler", "outputhandler", "latlon_to_mgrs"]

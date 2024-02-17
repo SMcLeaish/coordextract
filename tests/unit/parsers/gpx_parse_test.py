@@ -1,5 +1,5 @@
-"""
-This module contains tests for the GPX parsing functionality.
+"""This module contains tests for the GPX parsing functionality.
+
 It includes unit tests for validating the parsing of GPX point elements
 and the asynchronous parsing of GPX files, covering various scenarios
 like valid inputs, error handling, and unsupported GPX versions.
@@ -17,8 +17,8 @@ from coordextract.parsers.gpx_parse import parse_point
 
 @pytest.fixture
 def mock_gpx_point() -> etree._Element:
-    """
-    Creates a mock GPX point element with valid latitude and longitude attributes.
+    """Creates a mock GPX point element with valid latitude and
+    longitude attributes.
 
     Returns:
     An lxml _Element instance representing a GPX point.
@@ -31,8 +31,8 @@ def mock_gpx_point() -> etree._Element:
 
 # pylint: disable=redefined-outer-name
 def test_parse_point_valid(mock_gpx_point: etree._Element) -> None:
-    """
-    Tests if the parse_point function correctly parses valid GPX point elements.
+    """Tests if the parse_point function correctly parses valid GPX
+    point elements.
 
     Args:
     mock_gpx_point: A fixture that provides a mock GPX point element with valid coordinates.
@@ -45,8 +45,8 @@ def test_parse_point_valid(mock_gpx_point: etree._Element) -> None:
 
 @pytest.fixture
 def mock_invalid_gpx_point() -> etree._Element:
-    """
-    Creates a mock GPX point element with invalid latitude and longitude attributes.
+    """Creates a mock GPX point element with invalid latitude and
+    longitude attributes.
 
     Returns:
     An lxml _Element instance representing a GPX point.
@@ -60,9 +60,8 @@ def mock_invalid_gpx_point() -> etree._Element:
 def test_parse_point_invalid(
     mock_invalid_gpx_point: etree._Element, caplog: pytest.LogCaptureFixture
 ) -> None:
-    """
-    Tests the parse_point function with invalid latitude and longitude attributes
-    to ensure it logs an exception as expected.
+    """Tests the parse_point function with invalid latitude and
+    longitude attributes to ensure it logs an exception as expected.
 
     Args:
     mock_invalid_gpx_point: A fixture that provides a mock invalid GPX point element
@@ -78,10 +77,8 @@ def test_parse_point_invalid(
 
 @pytest.mark.asyncio
 async def test_async_parse_valid_gpx_with_mock():
-    """
-    Uses aiofiles and MagicMock object to mock a file read with valid xml data
-
-    """
+    """Uses aiofiles and MagicMock object to mock a file read with valid
+    xml data."""
     mock_file_content: bytes = b"""<?xml version="1.0" encoding="UTF-8"?>
     <gpx version="1.1" creator="exampleCreator" xmlns="http://www.topografix.com/GPX/1/1">
     <wpt lat="10.0" lon="-20.0">
@@ -115,9 +112,8 @@ async def test_async_parse_valid_gpx_with_mock():
 
 @pytest.mark.asyncio
 async def test_async_parse_empty_gpx_with_mock(caplog: pytest.LogCaptureFixture):
-    """
-    Uses aiofiles and MagicMock object to mock a file read with empty data
-    """
+    """Uses aiofiles and MagicMock object to mock a file read with empty
+    data."""
     mock_file_content: bytes = b""
 
     async def mock_async_read(*_args, **_kwargs) -> bytes:
@@ -145,9 +141,8 @@ async def test_async_parse_empty_gpx_with_mock(caplog: pytest.LogCaptureFixture)
 
 @pytest.mark.asyncio
 async def test_async_parse_invalid_gpx_data_with_mock(caplog: pytest.LogCaptureFixture):
-    """
-    Uses aiofiles and MagicMock object to mock a file read with gpx syntax error
-    """
+    """Uses aiofiles and MagicMock object to mock a file read with gpx
+    syntax error."""
     mock_file_content: bytes = b"""<?xml version="9000" encoding="UTF-8"?>
     <gpx version="1.1" creator="exampleCreator" xmlns="http://www.topografix.com/GPX/1/1">
     <wpt lat="10.0" lon="-20.0">
@@ -186,9 +181,7 @@ async def test_async_parse_invalid_gpx_data_with_mock(caplog: pytest.LogCaptureF
 async def test_async_parse_gpx_raises_os_error_with_mock(
     caplog: pytest.LogCaptureFixture,
 ):
-    """
-    Simulates an OSError on file read.
-    """
+    """Simulates an OSError on file read."""
     with patch.object(
         aiofiles, "open", side_effect=OSError("Simulated file read error")
     ):

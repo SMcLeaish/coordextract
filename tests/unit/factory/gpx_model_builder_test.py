@@ -1,7 +1,5 @@
-"""
-Tests for GPX point model processing in the `coordextract` 
-package, covering parsing, MGRS conversion, and error handling.
-"""
+"""Tests for GPX point model processing in the `coordextract` package,
+covering parsing, MGRS conversion, and error handling."""
 
 import math
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -26,8 +24,7 @@ async def test_process_gpx_to_point_models_with_data(
     return_value: list[tuple[float, float]],
     expected_length: list[tuple[float, float]],
 ):
-    """
-    Tests the processing of GPX data to PointModels, ensuring correct
+    """Tests the processing of GPX data to PointModels, ensuring correct
     handling of different return values.
 
     This test verifies that `process_gpx_to_point_models` correctly
@@ -59,8 +56,8 @@ async def test_process_gpx_to_point_models_with_data(
 async def test_process_gpx_to_point_models_with_nan(
     mock_latlon_to_mgrs, mock_async_parse_gpx, mock_logging_error
 ):
-    """
-    Ensures PointModels are created correctly when encountering NaN values in GPX data.
+    """Ensures PointModels are created correctly when encountering NaN
+    values in GPX data.
 
     Args:
     - mock_latlon_to_mgrs (MagicMock): Mock for MGRS conversion.
