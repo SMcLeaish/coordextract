@@ -1,42 +1,40 @@
 ---
+workflow:
+   rules:
+      - if: $CI_MERGE_REQUEST_ID
+        when: always
+      - when: never
+
 stages:
-  - prepare
-  - qa
-  - test
-  - sast
+   - prepare
+   - qa
+   - test
+   - sast
 
 include:
-  - template: Jobs/SAST.gitlab-ci.yml
+   - template: Jobs/SAST.gitlab-ci.yml
 
 default:
-  image: python:3.10
+   image: python:3.10
 
 prepare:
-  stage: prepare
-  script:
-    - pip install poetry
-    - poetry config virtualenvs.create false
-    - poetry install
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+   stage: prepare
+   script:
+      - pip install poetry
+      - poetry config virtualenvs.create false
+      - poetry install
 
 qa:
-  stage: qa
-  script:
-    - poetry run black . --check
-    - poetry run mypy .
-    - poetry run pylint coordextract
+   stage: qa
+   script:
+      - poetry run black . --check
+      - poetry run mypy .
+      - poetry run pylint coordextract
 
 test:
-  stage: test
-  script:
-    - poetry run pytest
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+   stage: test
+   script:
+      - poetry run pytest
 
 sast:
-  stage: sast
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-    - when: manual
+   stage: sast
