@@ -14,28 +14,33 @@ Functions:
 """
 
 import mimetypes
-from typing import Optional
+from typing import Tuple, Optional
+from pathlib import Path
+from magika import Magika
+from magika.types import MagikaResult
 from coordextract.models.point import PointModel
 from coordextract.factory import process_gpx_to_point_models
 from coordextract.exporters import point_models_to_json
 
 
-def get_mimetype(filename: str) -> str | None:
-    """Determines the MIME type of a file based on its filename
-    extension.
+def get_mimetype(filename: Path) -> Tuple[Optional[str], Optional[MagikaResult]]:
+    """Determines the MIME type of a file based on its filename extension and Magika.
 
     Args:
-        filename (str): The name of the file to analyze.
+        filename (Path): The path of the file to analyze.
 
     Returns:
-        str | None: The determined MIME type as a string, or None if the type could not be
-        determined.
+        Tuple[Optional[str], Optional[MagikaResult]]: The determined MIME type as a string, or None 
+        if the type could not be determined, and the MagikaResult or None.
     """
-    mimetype, _ = mimetypes.guess_type(filename)
-    return mimetype
+    m = Magika()
+    mimetype, _ = mimetypes.guess_type(str(filename))
+    magika_result = m.identify_path(filename)
 
+    
+    return mimetype, magika_result
 
-async def inputhandler(filename: str) -> list[PointModel]:
+async def inputhandler(filename: Path) -> list[PointModel]:
     """Asynchronously processes an input file to convert it into a list
     of PointModel instances.
 
@@ -51,16 +56,16 @@ async def inputhandler(filename: str) -> list[PointModel]:
     Raises:
         ValueError: If the file type is unsupported or cannot be determined.
     """
-    mimetype = get_mimetype(filename)
-    if mimetype is None:
+    mimetype, magika_result = get_mimetype(filename)
+    if mimetype is None or magika_result is None:
         raise ValueError(f"Could not determine the filetype of: {filename}")
-    if mimetype == "application/gpx+xml":
-        return await process_gpx_to_point_models(filename)
-    raise ValueError(f"Unsupported filetype: {mimetype} for file: {filename}")
+    if mimetype == "application/gpx+xml" and magika_result.output.mime_type == "text/xml":
+        return await process_gpx_to_point_models(str(filename))
+    raise ValueError(f"Unsupported filetype: {mimetype} for file: {filename}. \n ")
 
 
 def outputhandler(
-    point_models: list[PointModel], filename: Optional[str], indentation: Optional[int]
+    point_models: list[PointModel], filename: Optional[Path], indentation: Optional[int]
 ) -> None:
     """Exports a list of PointModel instances to a JSON file with
     specified indentation, or prints to stdout if no filename is
@@ -81,7 +86,7 @@ def outputhandler(
     if filename:
         mimetype = get_mimetype(filename)
         if mimetype == "application/json":
-            point_models_to_json(point_models, filename, indentation)
+            point_models_to_json(point_models, str(filename), indentation)
         else:
             raise ValueError(f"Unsupported output file type: {mimetype}")
     else:

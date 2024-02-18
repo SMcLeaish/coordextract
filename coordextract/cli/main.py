@@ -17,6 +17,7 @@ Usage:
 """
 
 from typing import Optional
+from pathlib import Path
 import asyncio
 from typing_extensions import Annotated
 import typer
@@ -27,7 +28,7 @@ app = typer.Typer()
 
 
 async def process_file(
-    inputfile: str, outputfile: Optional[str], indentation: Optional[int]
+    inputfile: Path, outputfile: Optional[Path], indentation: Optional[int]
 )-> None:
     """Asynchronously processes a geographic data file, outputs the
     results to a specified file or stdout.
@@ -71,18 +72,18 @@ async def process_file(
 @app.command()
 def main(
     inputfile: Annotated[
-        str,
+        Optional[Path],
         typer.Option(
             "--file", "-f", help="The file path to process. Accepted formats: gpx"
         ),
-    ] = "",
+    ] = None,
     coords: Optional[str] = typer.Option(
         None,
         "--coords",
         "-c",
         help="A comma-separated latitude and longitude string in quotes for MGRS conversion.",
     ),
-    outputfile: Optional[str] = typer.Option(
+    outputfile: Optional[Path] = typer.Option(
         None, "--out", "-o", help="Accepted formats: json "
     ),
     indentation: Optional[int] = typer.Option(
