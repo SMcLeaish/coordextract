@@ -34,6 +34,7 @@ black = "^24.2.0"
 docformatter = "^1.7.5"
 pylint-pytest = "^1.1.7"
 pylint-pydantic = "^0.3.2"
+ruff = "^0.2.2"
 
 [tool.mypy]
 strict = true
