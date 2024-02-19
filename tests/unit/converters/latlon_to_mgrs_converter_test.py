@@ -1,14 +1,14 @@
 """Unit testing for mgrs conversion module."""
 
-from typing import Any
-from unittest.mock import patch
+from typing import Generator
+from unittest.mock import patch, MagicMock
 from mgrs.core import MGRSError
 import pytest
 from coordextract.converters import latlon_to_mgrs
 
 
 @pytest.fixture
-def mock_mgrs_success():
+def mock_mgrs_success() -> Generator[MagicMock, None, None]:
     """This function produces a properly formatted mock value."""
     with patch("mgrs.MGRS") as mock_mgrs:
         instance = mock_mgrs.return_value
@@ -17,7 +17,7 @@ def mock_mgrs_success():
 
 
 # pylint: disable=redefined-outer-name
-def test_latlon_to_mgrs_success(mock_mgrs_success: Any):
+def test_latlon_to_mgrs_success(mock_mgrs_success: MagicMock) -> None:
     """This function tests passing mgrs_processing a properly formated
     mock value."""
     latitude, longitude = 37.65815587109628, -101.45319156731206
@@ -31,7 +31,7 @@ def test_latlon_to_mgrs_success(mock_mgrs_success: Any):
 
 
 @pytest.fixture
-def mock_mgrs_failure():
+def mock_mgrs_failure() -> Generator[MagicMock, None, None]:
     """This fixture mocks the MGRS class from the 'mgrs' library to
     raise an MGRSError for invalid inputs."""
     with patch("mgrs.MGRS") as mock_mgrs:
@@ -42,8 +42,8 @@ def mock_mgrs_failure():
 
 # pylint: disable=redefined-outer-name
 def test_latlon_to_mgrs_failure(
-    caplog: pytest.LogCaptureFixture, mock_mgrs_failure: Any
-):
+    caplog: pytest.LogCaptureFixture, mock_mgrs_failure: MagicMock
+) -> None:
     """Tests passing latlon_to_mgrs an improperly formatted mock
     value."""
     with pytest.raises(MGRSError):

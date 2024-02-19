@@ -10,9 +10,7 @@ are actively used, and may need to be extended if additional functionality from 
 utilized in the future.
 """
 
-from typing import Any
-
-class MGRSError(Exception): ...
-"""
-Exception raised for errors encountered during MGRS conversion operations.
-"""
+class MGRSError(Exception):
+    """
+    Exception raised for errors encountered during MGRS conversion operations.
+    """

@@ -6,7 +6,7 @@ from coordextract.parsers import async_parse_gpx
 
 
 @pytest.mark.asyncio
-async def test_async_parse_gpx_empty_file(caplog):
+async def test_async_parse_gpx_empty_file(caplog: pytest.LogCaptureFixture) -> None:
     """Passes empty gpx file from tests/data.
 
     Args:
@@ -23,7 +23,7 @@ async def test_async_parse_gpx_empty_file(caplog):
 
 
 @pytest.mark.asyncio
-async def test_async_parse_gpx_valid_file():
+async def test_async_parse_gpx_valid_file() -> None:
     """Passes empty gpx file from tests/data.
 
     Args:

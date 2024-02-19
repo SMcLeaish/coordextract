@@ -6,6 +6,7 @@ like valid inputs, error handling, and unsupported GPX versions.
 """
 
 from unittest.mock import MagicMock, patch
+from typing import Any, Tuple
 import math
 import logging
 import aiofiles
@@ -76,7 +77,7 @@ def test_parse_point_invalid(
 
 
 @pytest.mark.asyncio
-async def test_async_parse_valid_gpx_with_mock():
+async def test_async_parse_valid_gpx_with_mock() -> None:
     """Uses aiofiles and MagicMock object to mock a file read with valid
     xml data."""
     mock_file_content: bytes = b"""<?xml version="1.0" encoding="UTF-8"?>
@@ -88,7 +89,9 @@ async def test_async_parse_valid_gpx_with_mock():
     </wpt>
     </gpx>"""
 
-    async def mock_async_read(*_args, **_kwargs) -> bytes:
+    async def mock_async_read(
+        *_args: Tuple[Any, ...], **_kwargs: dict[str, Any]
+    ) -> bytes:
         return mock_file_content
 
     mock_file_obj: MagicMock = MagicMock()
@@ -111,12 +114,16 @@ async def test_async_parse_valid_gpx_with_mock():
 
 
 @pytest.mark.asyncio
-async def test_async_parse_empty_gpx_with_mock(caplog: pytest.LogCaptureFixture):
+async def test_async_parse_empty_gpx_with_mock(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Uses aiofiles and MagicMock object to mock a file read with empty
     data."""
     mock_file_content: bytes = b""
 
-    async def mock_async_read(*_args, **_kwargs) -> bytes:
+    async def mock_async_read(
+        *_args: Tuple[Any, ...], **_kwargs: dict[str, Any]
+    ) -> bytes:
         return mock_file_content
 
     mock_file_obj: MagicMock = MagicMock()
@@ -140,7 +147,9 @@ async def test_async_parse_empty_gpx_with_mock(caplog: pytest.LogCaptureFixture)
 
 
 @pytest.mark.asyncio
-async def test_async_parse_invalid_gpx_data_with_mock(caplog: pytest.LogCaptureFixture):
+async def test_async_parse_invalid_gpx_data_with_mock(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Uses aiofiles and MagicMock object to mock a file read with gpx
     syntax error."""
     mock_file_content: bytes = b"""<?xml version="9000" encoding="UTF-8"?>
@@ -152,7 +161,9 @@ async def test_async_parse_invalid_gpx_data_with_mock(caplog: pytest.LogCaptureF
     </wpt>
     """
 
-    async def mock_async_read(*_args, **_kwargs) -> bytes:
+    async def mock_async_read(
+        *_args: Tuple[Any, ...], **_kwargs: dict[str, Any]
+    ) -> bytes:
         return mock_file_content
 
     mock_file_obj: MagicMock = MagicMock()
@@ -180,7 +191,7 @@ async def test_async_parse_invalid_gpx_data_with_mock(caplog: pytest.LogCaptureF
 @pytest.mark.asyncio
 async def test_async_parse_gpx_raises_os_error_with_mock(
     caplog: pytest.LogCaptureFixture,
-):
+) -> None:
     """Simulates an OSError on file read."""
     with patch.object(
         aiofiles, "open", side_effect=OSError("Simulated file read error")

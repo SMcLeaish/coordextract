@@ -29,7 +29,7 @@ app = typer.Typer()
 
 async def process_file(
     inputfile: Path, outputfile: Optional[Path], indentation: Optional[int]
-)-> None:
+) -> None:
     """Asynchronously processes a geographic data file, outputs the
     results to a specified file or stdout.
 
@@ -92,7 +92,7 @@ def main(
         "-i",
         help="Optionally add indentation level to json. Defaults to 2.",
     ),
-)-> None:
+) -> None:
     """Processes an input file or coordinates for geographic data
     conversion and output handling.
 
