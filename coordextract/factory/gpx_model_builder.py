@@ -5,7 +5,7 @@ converting them into a list of PointModel instances. Each PointModel
 instance represents a geographic point with its latitude, longitude, and
 converted Military Grid Reference System (MGRS) coordinates.
 
-The module integrates components for parsing GPX files and converting geographic coordinates 
+The module integrates components for parsing GPX files and converting geographic coordinates
 to ensure efficient processing and accurate data representation.
 
 Functions:

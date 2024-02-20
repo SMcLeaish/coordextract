@@ -1,9 +1,8 @@
-"""
-Initializes the model factory module, providing functions to generate geographic data models from 
-various file types.
+"""Initializes the model factory module, providing functions to generate
+geographic data models from various file types.
 
-Currently includes functionality for processing GPX files into point models. This module aims to 
-serve as a centralized location for functions that convert file-based geographic data into 
+Currently includes functionality for processing GPX files into point models. This module aims to
+serve as a centralized location for functions that convert file-based geographic data into
 structured models, facilitating easy expansion to support additional file formats in the future.
 
 Available Functions:

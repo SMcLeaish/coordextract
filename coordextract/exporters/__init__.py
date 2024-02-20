@@ -1,5 +1,5 @@
-"""
-Provides functionality for exporting geographic point models to different file formats.
+"""Provides functionality for exporting geographic point models to
+different file formats.
 
 Currently supports exporting to JSON format. This module serves as a hub for
 conversion utilities, facilitating the serialization of geographic data represented

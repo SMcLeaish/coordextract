@@ -2,8 +2,8 @@
 conversions and output processing. It includes utilities for determining
 file MIME types, processing GPX files to extract geographic points, and
 exporting these points to JSON format with optional indentation. The
-module currently supports input files in GPX format and outputs data in JSON
-format.
+module currently supports input files in GPX format and outputs data in
+JSON format.
 
 Functions:
 - get_mimetype: Determines the MIME type of a given file based on its extension.
@@ -26,7 +26,8 @@ from coordextract.exporters import point_models_to_json
 
 
 def get_mimetype(filename: Path) -> Tuple[Optional[str], Optional[MagikaResult]]:
-    """Determines the MIME type of a file based on its filename extension and Magika.
+    """Determines the MIME type of a file based on its filename
+    extension and Magika.
 
     Args:
         filename (Path): The path of the file to analyze.

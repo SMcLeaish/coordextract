@@ -5,12 +5,12 @@ ability to write the output directly to a file or standard output
 (stdout).
 
 Functions:
-- point_models_to_json: Serializes a list of PointModel instances into JSON, writing to a file or 
+- point_models_to_json: Serializes a list of PointModel instances into JSON, writing to a file or
   stdout.
 - get_mimetype: Determines the MIME type of a given file, aiding in the processing of input files.
 
-The module emphasizes ease of use, flexibility, and error resilience, making it suitable for 
-applications hat require the processing, serialization, and output of geographic data in a 
+The module emphasizes ease of use, flexibility, and error resilience, making it suitable for
+applications hat require the processing, serialization, and output of geographic data in a
 structured format.
 
 Example Usage:

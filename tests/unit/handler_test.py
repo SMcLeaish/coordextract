@@ -1,6 +1,4 @@
-"""
-This module tests the file handler module. 
-"""
+"""This module tests the file handler module."""
 
 from unittest.mock import patch, MagicMock
 from typing import Generator, cast
@@ -15,9 +13,7 @@ from coordextract.models.point import PointModel
 
 @pytest.fixture
 def mock_magicka_identify_path_success() -> Generator[MagicMock, None, None]:
-    """
-    Mocks the magika classes MagikaResult and MagikaOutputFields.
-    """
+    """Mocks the magika classes MagikaResult and MagikaOutputFields."""
     mock_magika_result = MagicMock(spec=MagikaResult)
     mock_output_fields = MagikaOutputFields(
         ct_label="some_label",
@@ -36,9 +32,7 @@ def mock_magicka_identify_path_success() -> Generator[MagicMock, None, None]:
 
 
 def test_get_mimetype_success(mock_magicka_identify_path_success: MagicMock) -> None:
-    """
-    Tests the mimetype function with mocked successful data.
-    """
+    """Tests the mimetype function with mocked successful data."""
     with patch(
         "mimetypes.guess_type", return_value=("application/gpx+xml", None)
     ) as mock_mimetypes:
@@ -58,9 +52,7 @@ def test_get_mimetype_success(mock_magicka_identify_path_success: MagicMock) -> 
 async def test_inputhandler_unsupported_filetype(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """
-    Tests error handling for an unsupported mimetype.
-    """
+    """Tests error handling for an unsupported mimetype."""
     with patch(
         "mimetypes.guess_type", return_value=("unsupported/mimetype", None)
     ), patch(
@@ -80,9 +72,7 @@ async def test_inputhandler_unsupported_filetype(
 async def test_inputhandler_unsupported_no_filetype(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """
-    Tests error handling for a missing mimetype.
-    """
+    """Tests error handling for a missing mimetype."""
     with patch("mimetypes.guess_type", return_value=(None, None)), patch(
         "magika.Magika.identify_path",
         return_value=MagicMock(output=MagicMock(mime_type="unsupported/mime_type")),
@@ -97,9 +87,8 @@ async def test_inputhandler_unsupported_no_filetype(
 
 
 async def mock_process_gpx_to_point_models(_file_path: str) -> list[PointModel]:
-    """
-    Creates a mock call to gpx_to_point_model to create a PointModel.
-    """
+    """Creates a mock call to gpx_to_point_model to create a
+    PointModel."""
     mock_point = PointModel(
         name="Test Point",
         gpxpoint="waypoint",
@@ -112,9 +101,8 @@ async def mock_process_gpx_to_point_models(_file_path: str) -> list[PointModel]:
 
 @pytest.mark.asyncio
 async def test_inputhandler_returns_pointmodel_list() -> None:
-    """
-    Tests that process_gpx_to_point_models is called correctly on valid mime types.
-    """
+    """Tests that process_gpx_to_point_models is called correctly on
+    valid mime types."""
     mock_magika_result = MagicMock()
     mock_magika_result.output.mime_type = "text/xml"
 
@@ -132,9 +120,7 @@ async def test_inputhandler_returns_pointmodel_list() -> None:
 
 @pytest.fixture
 def point_models() -> list[MagicMock]:
-    """
-    Creates a list of 3 PointModel objects.
-    """
+    """Creates a list of 3 PointModel objects."""
     return [MagicMock(spec=PointModel) for _ in range(3)]
 
 
@@ -143,28 +129,19 @@ def point_models() -> list[MagicMock]:
 def test_outputhandler_json_file(
     mock_get_mimetype: MagicMock, mock_to_json: MagicMock, point_models: list[MagicMock]
 ) -> None:
-    """
-    Tests ouputhandler with json filetype.
-    """
+    """Tests ouputhandler with json filetype."""
     mock_get_mimetype.return_value = ("application/json", None)
     test_filename = Path("test.json")
     cast_point_models = cast(list[PointModel], point_models)
     outputhandler(cast_point_models, test_filename, 4)
-    mock_to_json.assert_called_once_with(
-        cast_point_models,
-        str(test_filename),
-        4,
-        message="Should call point models to json.",
-    )
+    mock_to_json.assert_called_once_with(cast_point_models, str(test_filename), 4)
 
 
 @patch("coordextract.handler.get_mimetype")
 def test_outputhandler_unsupported_filetype(
     mock_get_mimetype: MagicMock, point_models: list[MagicMock]
 ) -> None:
-    """
-    Tests outputhandler with unsupported filetype.
-    """
+    """Tests outputhandler with unsupported filetype."""
     mock_get_mimetype.return_value = ("text/plain", None)
     cast_point_models = cast(list[PointModel], point_models)
     with pytest.raises(ValueError) as exc_info:
@@ -182,14 +159,7 @@ def test_outputhandler_unsupported_filetype(
 def test_outputhandler_no_file(
     mock_to_json: MagicMock, point_models: list[MagicMock]
 ) -> None:
-    """
-    Tests outputhandler with no file given.
-    """
+    """Tests outputhandler with no file given."""
     cast_point_models = cast(list[PointModel], point_models)
     outputhandler(cast_point_models, None, None)
-    mock_to_json.assert_called_once_with(
-        point_models,
-        None,
-        None,
-        message="Should call point models to json and no file output.",
-    )
+    mock_to_json.assert_called_once_with(point_models, None, None)

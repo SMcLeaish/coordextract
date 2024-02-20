@@ -1,7 +1,5 @@
-"""
-Tests for GPX point model processing in the `coordextract` package,
-covering parsing, MGRS conversion, and error handling.
-"""
+"""Tests for GPX point model processing in the `coordextract` package,
+covering parsing, MGRS conversion, and error handling."""
 
 import math
 from unittest.mock import AsyncMock, MagicMock, patch

@@ -2,8 +2,8 @@
 data files and converting coordinates.
 
 This CLI supports processing GPX files to extract geographic points and converting latitude and
-longitude coordinates to the Military Grid Reference System (MGRS). It allows users to specify 
-an input GPX file, an output JSON file with optional indentation, and direct latitude and longitude 
+longitude coordinates to the Military Grid Reference System (MGRS). It allows users to specify
+an input GPX file, an output JSON file with optional indentation, and direct latitude and longitude
 inputs for quick MGRS conversions.
 
 Features:
@@ -15,7 +15,7 @@ Usage:
 - For GPX file processing: `coordextract -f path/to/file.gpx -o output.json -i 2`
 - For direct MGRS conversion: `coordextract -c "latitude,longitude"`
 """
-
+import sys
 from typing import Optional
 from pathlib import Path
 import asyncio
@@ -56,21 +56,22 @@ async def process_file(
         filehandler_result = await inputhandler(inputfile)
         if filehandler_result is not None:
             outputhandler(filehandler_result, outputfile, indentation)
-            typer.echo("Processing completed successfully.")
+            print("Processing completed successfully.")
         else:
-            typer.echo(
+            print(
                 "Error: File handler returned None. Check the input file path\
                 or filehandler implementation.",
-                err=True,
+                file=sys.stderr,
             )
-            raise typer.Exit(code=1)
+            sys.exit(1)
     except ValueError as e:
-        typer.echo(str(e), err=True)
-        raise typer.Exit(code=1)
+        print(str(e), file=sys.stderr)
+        sys.exit(1)
 
 
 @app.command()
 def main(
+    ctx: typer.Context,
     inputfile: Annotated[
         Optional[Path],
         typer.Option(
@@ -93,19 +94,18 @@ def main(
         help="Optionally add indentation level to json. Defaults to 2.",
     ),
 ) -> None:
-    """Processes an input file or coordinates for geographic data
-    conversion and output handling.
-
-    Depending on the input, this function either processes a GPX file to extract geographic points
-    and optionally exports them to a JSON file, or converts a pair of latitude and longitude
-    coordinates directly to MGRS.
+    """Accepts a GPX file as input and outputs a JSON object with all
+    points and converted MGRS. When an output filename is given it will
+    write the points to that file.
 
     Args:
-        inputfile (str): Path to the GPX file to process. If provided, triggers file processing.
-        coords (Optional[str]): Comma-separated latitude and longitude for direct MGRS conversion.
-        outputfile (Optional[str]): Path to the output JSON file for file processing mode.
-        indentation (Optional[int]): Indentation level for the JSON output. Defaults to 2 spaces.
+        inputfile (str): Path to the GPX file to process.
 
+        coords (Optional[str]): Comma-separated latitude and longitude for direct MGRS conversion.
+
+        outputfile (Optional[str]): Path to the output JSON file for file processing mode.
+
+        indentation (Optional[int]): Indentation level for the JSON output. Defaults to 2 spaces.
     """
     if coords:
         try:
@@ -120,9 +120,9 @@ def main(
     elif inputfile:
         asyncio.run(process_file(inputfile, outputfile, indentation))
     else:
-        print("No input provided.")
+        print(ctx.get_help())
         raise typer.Exit(code=0)
 
 
 if __name__ == "__main__":
-    app()
+    app()  # pragma: no cover

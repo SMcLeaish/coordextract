@@ -1,14 +1,13 @@
-"""
-Defines data models for representing geographic points in various formats and coordinates systems.
-"""
+"""Defines data models for representing geographic points in various
+formats and coordinates systems."""
 
 from pydantic import BaseModel
 
 
 class PointModel(BaseModel):
-    """
-    Represents a geographic point with optional name and type, latitude and longitude coordinates,
-    and MGRS (Military Grid Reference System) notation.
+    """Represents a geographic point with optional name and type,
+    latitude and longitude coordinates, and MGRS (Military Grid
+    Reference System) notation.
 
     Attributes:
         name (str | None): Optional name of the point.
