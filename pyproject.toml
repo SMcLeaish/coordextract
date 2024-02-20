@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "coordextract"
-version = "0.2.0"
+version = "0.1.0"
 description = "coordextract is a Python library and CLI tool for converting latitude and longitude data from GPX files into Military Grid Reference System (MGRS) coordinates. The library parses GPX files, extracts geographical points, and provides an efficient way to convert and export these points into various formats."
 authors = ["Sean McLeaish <smcleaish@gmail.com>"]
 license = "MIT"

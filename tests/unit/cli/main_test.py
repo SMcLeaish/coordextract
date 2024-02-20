@@ -7,6 +7,7 @@ functionality revolves around processing input data to generate
 geospatially relevant output, making it useful for GIS applications and
 data processing tasks.
 """
+
 from unittest.mock import patch, MagicMock, AsyncMock
 from pathlib import Path
 import io
@@ -18,7 +19,7 @@ runner = CliRunner()
 
 
 @pytest.mark.asyncio
-async def test_main_with_coords()->None:
+async def test_main_with_coords() -> None:
     """Tests the main function's ability to process direct coordinate
     inputs provided via command line arguments, ensuring correct
     conversion and output."""
@@ -28,7 +29,7 @@ async def test_main_with_coords()->None:
 
 
 @pytest.mark.asyncio
-async def test_main_with_invalid_coords()->None:
+async def test_main_with_invalid_coords() -> None:
     """Tests the main function's response to invalid coordinate inputs,
     verifying that it correctly identifies and reports format errors."""
     result = runner.invoke(app, ["--coords", "not,a,coordinate"])
@@ -37,7 +38,7 @@ async def test_main_with_invalid_coords()->None:
 
 
 @pytest.mark.asyncio
-async def test_main_no_input()->None:
+async def test_main_no_input() -> None:
     """Tests the main function's behavior when no inputs are provided,
     ensuring the display of usage instructions."""
     result = runner.invoke(app, [])
@@ -46,7 +47,7 @@ async def test_main_no_input()->None:
 
 
 @patch("coordextract.cli.main.process_file")
-def test_main_with_inputfile(mock_process_file: MagicMock)->None:
+def test_main_with_inputfile(mock_process_file: MagicMock) -> None:
     """Tests the main function's ability to handle file input arguments,
     checking if the file processing function is called with correct
     parameters."""
@@ -71,7 +72,7 @@ def test_main_with_inputfile(mock_process_file: MagicMock)->None:
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.inputhandler", new_callable=AsyncMock)
-async def test_process_file_valid_input(mock_inputhandler: AsyncMock)-> None:
+async def test_process_file_valid_input(mock_inputhandler: AsyncMock) -> None:
     """Tests processing of a valid input file, ensuring the input
     handler function is called with the correct file path."""
     await process_file(Path("dummy.gpx"), None, 2)
@@ -80,7 +81,9 @@ async def test_process_file_valid_input(mock_inputhandler: AsyncMock)-> None:
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.inputhandler", new_callable=AsyncMock)
-async def test_process_file_inputhandler_returns_none(mock_inputhandler: AsyncMock)->None:
+async def test_process_file_inputhandler_returns_none(
+    mock_inputhandler: AsyncMock,
+) -> None:
     """Tests the behavior of the process_file function when the input
     handler returns None, verifying error handling and messaging."""
     mock_inputhandler.return_value = None
@@ -97,7 +100,9 @@ async def test_process_file_inputhandler_returns_none(mock_inputhandler: AsyncMo
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.inputhandler", new_callable=AsyncMock)
-async def test_process_file_with_value_error_direct_handling(mock_inputhandler: AsyncMock)->None:
+async def test_process_file_with_value_error_direct_handling(
+    mock_inputhandler: AsyncMock,
+) -> None:
     """Tests the process_file function's error handling capabilities
     when a ValueError is raised during processing, ensuring appropriate
     error messages are logged."""
@@ -115,7 +120,7 @@ async def test_process_file_with_value_error_direct_handling(mock_inputhandler: 
 @patch("coordextract.cli.main.outputhandler", new_callable=MagicMock)
 async def test_process_file_calls_outputhandler_correctly(
     mock_outputhandler: MagicMock,
-)->None:
+) -> None:
     """Tests whether the process_file function correctly calls the
     output handler with the expected arguments, ensuring proper data
     flow through the application."""

@@ -3,7 +3,7 @@ the mgrs library."""
 
 import pytest
 from mgrs.core import MGRSError
-from coordextract.converters import latlon_to_mgrs
+from coordextract import latlon_to_mgrs
 
 
 def test_latlon_to_mgrs_with_valid_data() -> None:

@@ -7,16 +7,15 @@ Example usage:
 """
 
 import math
-from typing import Tuple
-import logging
+from typing import Tuple, Optional, Any
 import aiofiles
 from lxml import etree
 
-Coordinates = Tuple[float, float]
+Coordinates = Tuple[float, float, Optional[dict[str,str | Any]]]
 CoordinatesList = list[Coordinates]
 
 
-def parse_point(point: etree._Element) -> Tuple[float, float]:
+def parse_point(point: etree._Element) -> Tuple[float, float, Optional[dict[str,str | Any]]]:
     """Extracts the latitude and longitude from a GPX point element.
 
     Args:
@@ -28,11 +27,15 @@ def parse_point(point: etree._Element) -> Tuple[float, float]:
     try:
         lat = point.get("lat")
         lon = point.get("lon")
+        extra_fields = {}
+        for child in point:
+            tag = etree.QName(child).localname
+            extra_fields[tag] = child.text
         if lat is not None and lon is not None:
-            return float(lat), float(lon)
-    except ValueError:
-        logging.exception("Invalid coordinate value encountered.")
-    return (math.nan, math.nan)
+            return float(lat), float(lon), extra_fields
+    except Exception as e:
+        raise ValueError("Invalid coordinate value encountered.") from e
+    return (math.nan, math.nan, extra_fields)
 
 
 async def async_parse_gpx(
@@ -52,17 +55,15 @@ async def async_parse_gpx(
         async with aiofiles.open(gpx_file_path, "rb") as file:
             xml_data = await file.read()
         if not xml_data.strip():
-            logging.error("GPX file is empty or unreadable: %s", gpx_file_path)
-            return [], [], []
-        # xml_data_str = xml_data.decode('utf-8')
-        # debug unit test error "data must be string"
-        xml = etree.fromstring(xml_data, parser)
-    except OSError:
-        logging.exception("Error opening or reading file")
-        return [], [], []
-    except etree.XMLSyntaxError:
-        logging.exception("XML syntax error in the file.")
-        return [], [], []
+            raise ValueError("GPX file is empty or unreadable")
+        try:
+            xml = etree.fromstring(xml_data, parser)
+        except etree.XMLSyntaxError as e:
+            raise ValueError(f"GPX file contains invalid XML: {e}") from e
+    except OSError as e:
+        raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
+    except Exception as e:
+        raise OSError(f"Unexpected error processing file {gpx_file_path}: {e}") from e
 
     root_tag = xml.tag
     namespace_uri = root_tag[root_tag.find("{") + 1 : root_tag.find("}")]

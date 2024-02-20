@@ -3,9 +3,9 @@ coordextract is a Python library and CLI tool for converting latitude and longit
 
 ## Features
 
-- Parse GPX files to extract latitude and longitude data (csv and kml parsing coming soon).
+- Parse GPX files to extract latitude and longitude data 
 - Convert latitude and longitude to MGRS coordinates.
-- Output the converted data in CSV, JSON, or XLSX formats (coming soon - JSON currently supported).
+- Output the converted JSON
 - Command-line interface (CLI).
 
 ## Installation
@@ -26,10 +26,8 @@ You can use coordextract as a library by importing it, or as a standalone CLI to
 ### As a library
 
 ```python
-from coordextract import filehandler
-
-# Parse a GPX file and return a list of pydantic model objects
-points = filehandler('path/to/your/file.gpx')
+inputhandler(filename: Path) -> list[PointModel]:
+outputhandler(point_models: list[PointModel], filename: Optional[Path], indentation: Optional[int]
 ```
 
 ### As a CLI tool

@@ -12,7 +12,7 @@ import logging
 import aiofiles
 import pytest
 from lxml import etree
-from coordextract.parsers import async_parse_gpx
+from coordextract.parsers.gpx_parse import async_parse_gpx
 from coordextract.parsers.gpx_parse import parse_point
 
 

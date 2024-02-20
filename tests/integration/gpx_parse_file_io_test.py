@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import pytest
-from coordextract.parsers import async_parse_gpx
+from coordextract.parsers.gpx_parse import async_parse_gpx
 
 
 @pytest.mark.asyncio

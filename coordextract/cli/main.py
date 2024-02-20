@@ -15,14 +15,14 @@ Usage:
 - For GPX file processing: `coordextract -f path/to/file.gpx -o output.json -i 2`
 - For direct MGRS conversion: `coordextract -c "latitude,longitude"`
 """
+
 import sys
 from typing import Optional
 from pathlib import Path
 import asyncio
 from typing_extensions import Annotated
 import typer
-from coordextract.converters import latlon_to_mgrs
-from coordextract import inputhandler, outputhandler
+from .. import inputhandler, outputhandler, latlon_to_mgrs
 
 app = typer.Typer()
 
@@ -64,7 +64,7 @@ async def process_file(
                 file=sys.stderr,
             )
             sys.exit(1)
-    except ValueError as e:
+    except (ValueError, OSError) as e:
         print(str(e), file=sys.stderr)
         sys.exit(1)
 

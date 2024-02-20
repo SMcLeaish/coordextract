@@ -17,8 +17,10 @@ class PointModel(BaseModel):
         mgrs (str): MGRS notation for the geographic location of the point.
     """
 
-    name: str | None = None
     gpxpoint: str | None = None
     latitude: float
     longitude: float
     mgrs: str
+
+    class Config:
+        extra = 'allow'

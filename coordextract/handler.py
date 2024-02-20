@@ -20,9 +20,9 @@ from pathlib import Path
 # watch for Magika type stubs to be released
 from magika.magika import Magika  # type: ignore
 from magika.types import MagikaResult  # type: ignore
-from coordextract.models.point import PointModel
-from coordextract.factory import process_gpx_to_point_models
-from coordextract.exporters import point_models_to_json
+from .models.point import PointModel
+from .factory.gpx_model_builder import process_gpx_to_point_models
+from .exporters.model_to_json import point_models_to_json
 
 
 def get_mimetype(filename: Path) -> Tuple[Optional[str], Optional[MagikaResult]]:

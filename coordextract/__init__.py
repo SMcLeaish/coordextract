@@ -27,7 +27,14 @@ Example Usage:
 >>> outputhandler(points, 'output.json', 2)
 """
 
-from .converters import latlon_to_mgrs
-from .handler import inputhandler, outputhandler
+from .models.point import PointModel
+from .converters.latlon_to_mgrs_converter import latlon_to_mgrs
+from .handler import inputhandler, outputhandler, get_mimetype
 
-__all__ = ["inputhandler", "outputhandler", "latlon_to_mgrs"]
+__all__ = [
+    "inputhandler",
+    "outputhandler",
+    "latlon_to_mgrs",
+    "get_mimetype",
+    "PointModel",
+]

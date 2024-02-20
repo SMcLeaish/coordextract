@@ -8,7 +8,7 @@ import pytest
 # watch for Magika type stubs to be released
 from magika.types import MagikaResult, MagikaOutputFields  # type: ignore
 from coordextract.handler import get_mimetype, inputhandler, outputhandler
-from coordextract.models.point import PointModel
+from coordextract import PointModel
 
 
 @pytest.fixture

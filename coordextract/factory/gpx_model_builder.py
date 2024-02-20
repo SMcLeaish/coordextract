@@ -14,8 +14,8 @@ Functions:
 
 import math
 import logging
-from coordextract.parsers import async_parse_gpx
-from coordextract.converters import latlon_to_mgrs
+from coordextract.parsers.gpx_parse import async_parse_gpx
+from coordextract.converters.latlon_to_mgrs_converter import latlon_to_mgrs
 from coordextract.models.point import PointModel
 
 
@@ -48,21 +48,31 @@ async def process_gpx_to_point_models(gpx_file_path: str) -> list[PointModel]:
     }
     point_models = []
     for point_type, points in points_with_types.items():
-        for latitude, longitude in points:
+        for point in points:
+            latitude, longitude, additional_fields = point
+
             if math.isnan(latitude) or math.isnan(longitude):
-                logging.error(
-                    "Skipping invalid point with coordinates: %s, %s",
-                    latitude,
-                    longitude,
+                logging.warning(
+                    "Skipping invalid point with attributes: %s, %s",
+                    latitude, longitude
                 )
                 continue
+
             mgrs = latlon_to_mgrs(latitude, longitude)
-            point_model = PointModel(
-                name=None,
-                gpxpoint=point_type,
-                latitude=latitude,
-                longitude=longitude,
-                mgrs=mgrs,
-            )
+
+            point_data = {
+                "name": additional_fields.get("name") if additional_fields else None,
+                "gpxpoint": point_type,
+                "latitude": latitude,
+                "longitude": longitude,
+                "mgrs": mgrs
+            }
+
+            # If there are additional fields, update point_data with them
+            if additional_fields:
+                point_data.update(additional_fields)
+
+            # Create PointModel instance
+            point_model = PointModel(**point_data)
             point_models.append(point_model)
     return point_models
