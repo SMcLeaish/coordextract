@@ -48,31 +48,13 @@ async def process_gpx_to_point_models(gpx_file_path: str) -> list[PointModel]:
     }
     point_models = []
     for point_type, points in points_with_types.items():
-        for point in points:
-            latitude, longitude, additional_fields = point
-
+        for latitude, longitude, additional_fields in points:
             if math.isnan(latitude) or math.isnan(longitude):
-                logging.warning(
-                    "Skipping invalid point with attributes: %s, %s",
-                    latitude, longitude
-                )
+                logging.warning(f"Skipping invalid point with attributes: {latitude}, {longitude}")
                 continue
-
-            mgrs = latlon_to_mgrs(latitude, longitude)
-
-            point_data = {
-                "name": additional_fields.get("name") if additional_fields else None,
-                "gpxpoint": point_type,
-                "latitude": latitude,
-                "longitude": longitude,
-                "mgrs": mgrs
-            }
-
-            # If there are additional fields, update point_data with them
-            if additional_fields:
-                point_data.update(additional_fields)
-
-            # Create PointModel instance
-            point_model = PointModel(**point_data)
+            
+            # Use the create_from_gpx class method to instantiate PointModel
+            point_model = PointModel.create_from_gpx_data(point_type, latitude, longitude, additional_fields or {})
             point_models.append(point_model)
+    
     return point_models
