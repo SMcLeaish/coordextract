@@ -71,30 +71,37 @@ def test_main_with_inputfile(mock_process_file: MagicMock) -> None:
 
 
 @pytest.mark.asyncio
-@patch("coordextract.cli.main.IOHandler")
-async def test_process_file_valid_input(mock_iohandler_class) -> None:
-    """Tests processing of a valid input file."""
-    mock_iohandler_instance = mock_iohandler_class.return_value
-    mock_iohandler_instance.process_input = AsyncMock(return_value="some_result")
+@patch("coordextract.cli.main.handler_factory")  
+async def test_process_file_valid_input(mock_factory) -> None:
+    """Tests processing of a valid input and outputfile using a mock handler factory."""
+    mock_input_handler_instance = AsyncMock()
+    mock_input_handler_instance.process_input = AsyncMock(return_value="some_result")
+    mock_output_handler_instance = AsyncMock()
+    mock_output_handler_instance.process_output = AsyncMock()
+    mock_factory.side_effect = [mock_input_handler_instance, mock_output_handler_instance]
     with pytest.raises(SystemExit) as e:
-        await process_file(Path("dummy.gpx"), None, 2)
-    mock_iohandler_instance.process_input.assert_called_once()
+        await process_file(Path("dummy.gpx"), Path("dummy.json"), 2)
+    assert mock_factory.call_count == 2
+    mock_input_handler_instance.process_input.assert_called_once()
+    mock_output_handler_instance.process_output.assert_called_once_with("some_result", 2)
     assert e.type == SystemExit
     assert e.value.code == 0
 
 
+
 @pytest.mark.asyncio
-@patch("coordextract.cli.main.IOHandler")
-async def test_process_file_inputhandler_returns_none(mock_iohandler_class) -> None:
+@patch("coordextract.cli.main.handler_factory")
+async def test_process_file_inputhandler_returns_none(mock_factory) -> None:
     """Tests the behavior of the process_file function when the input
     handler returns None."""
-    mock_iohandler_instance = mock_iohandler_class.return_value
-    mock_iohandler_instance.process_input = AsyncMock(return_value=None)
-
+    mock_input_handler_instance = AsyncMock()
+    mock_input_handler_instance.process_input = AsyncMock(return_value= None)
+    mock_factory.side_effect = [mock_input_handler_instance]
     with patch("sys.stderr", new_callable=io.StringIO) as mock_stderr:
         with pytest.raises(SystemExit) as e:
             await process_file(Path("dummy.gpx"), Path("dummy.json"), 2)
-        mock_iohandler_instance.process_input.assert_called_once()
+        mock_factory.assert_called_once()
+        mock_input_handler_instance.process_input.assert_called_once()
         assert (
             "Error: File handler returned None. Check the input file path"
             in mock_stderr.getvalue()
@@ -103,36 +110,43 @@ async def test_process_file_inputhandler_returns_none(mock_iohandler_class) -> N
 
 
 @pytest.mark.asyncio
-@patch("coordextract.cli.main.IOHandler")
+@patch("coordextract.cli.main.handler_factory")
 async def test_process_file_with_value_error_direct_handling(
-    mock_iohandler_class,
+    mock_factory,
 ) -> None:
     """Tests the process_file function's error handling capabilities
     when a ValueError is raised during processing."""
-    mock_iohandler_instance = mock_iohandler_class.return_value
-    mock_iohandler_instance.process_input.side_effect = ValueError("An error occurred")
+    mock_input_handler_instance = AsyncMock()
+    mock_input_handler_instance.process_input = AsyncMock()
+    mock_factory.side_effect = [mock_input_handler_instance]
+    mock_input_handler_instance.process_input.side_effect = ValueError("An error occurred")
 
     with patch("sys.stderr", new=io.StringIO()) as mock_stderr:
         with pytest.raises(SystemExit) as sys_exit:
             await process_file(Path("dummy.gpx"), None, 2)
-
+        mock_factory.assert_called_once()
+        mock_input_handler_instance.process_input.assert_called_once()
         assert "An error occurred" in mock_stderr.getvalue()
         assert sys_exit.value.code == 1
 
 
 @pytest.mark.asyncio
-@patch("coordextract.cli.main.IOHandler")
-async def test_process_file_calls_outputhandler_correctly(
-    mock_iohandler_class,
+@patch("coordextract.cli.main.handler_factory")
+async def test_process_file_calls_outputhandler_without_outputfile(
+    mock_factory,
 ) -> None:
     """Tests whether the process_file function correctly calls the
     output handler with the expected arguments"""
-    mock_iohandler_instance = mock_iohandler_class.return_value
     mock_result = MagicMock()
-    mock_iohandler_instance.process_input = AsyncMock(return_value=mock_result)
-    mock_iohandler_instance.process_output = AsyncMock()
+    mock_input_handler_instance = AsyncMock()
+    mock_input_handler_instance.process_input = AsyncMock(return_value=mock_result)
+    mock_output_handler_instance = AsyncMock()
+    mock_output_handler_instance.process_output = AsyncMock()
+    mock_factory.side_effect = [mock_input_handler_instance, mock_output_handler_instance]
     with pytest.raises(SystemExit) as e:
-        await process_file(Path("dummy.gpx"), Path("dummy.json"), 2)
-    mock_iohandler_instance.process_output.assert_called_once_with(mock_result, 2)
+        await process_file(Path("dummy.gpx"), None , 2)
+    assert mock_factory.call_count == 2
+    mock_input_handler_instance.process_input.assert_called_once()
+    mock_output_handler_instance.process_output.assert_called_once_with(mock_result, 2)
     assert e.type == SystemExit
     assert e.value.code == 0

@@ -58,9 +58,10 @@ async def process_file(
         filehandler_result = await input_handler.process_input()
         if filehandler_result is not None and outputfile is not None:
             output_handler = handler_factory(outputfile)
-            output_handler.filename = outputfile
-            output_handler.process_output(filehandler_result, indentation)
-            sys.exit(0)
+            if outputfile is not None:
+                output_handler.filename = outputfile
+                output_handler.process_output(filehandler_result, indentation)
+                sys.exit(0)
         elif filehandler_result is not None:
             output_handler = handler_factory()
             output_str = output_handler.process_output(filehandler_result, indentation)
