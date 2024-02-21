@@ -11,11 +11,13 @@ from typing import Tuple, Optional, Any
 import aiofiles
 from lxml import etree
 
-Coordinates = Tuple[float, float, Optional[dict[str,str | Any]]]
+Coordinates = Tuple[float, float, Optional[dict[str, str | Any]]]
 CoordinatesList = list[Coordinates]
 
 
-def parse_point(point: etree._Element) -> Tuple[float, float, Optional[dict[str,str | Any]]]:
+def parse_point(
+    point: etree._Element,
+) -> Tuple[float, float, Optional[dict[str, str | Any]]]:
     """Extracts the latitude and longitude from a GPX point element.
 
     Args:
@@ -62,8 +64,8 @@ async def async_parse_gpx(
             raise ValueError(f"GPX file contains invalid XML: {e}") from e
     except OSError as e:
         raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
-    except Exception as e:
-        raise OSError(f"Unexpected error processing file {gpx_file_path}: {e}") from e
+    except RuntimeError as e:
+        raise RuntimeError(f"Unexpected error processing file {gpx_file_path}: {e}") from e
 
     root_tag = xml.tag
     namespace_uri = root_tag[root_tag.find("{") + 1 : root_tag.find("}")]

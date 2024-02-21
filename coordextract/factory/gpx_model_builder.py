@@ -15,7 +15,6 @@ Functions:
 import math
 import logging
 from coordextract.parsers.gpx_parse import async_parse_gpx
-from coordextract.converters.latlon_to_mgrs_converter import latlon_to_mgrs
 from coordextract.models.point import PointModel
 
 
@@ -50,11 +49,15 @@ async def process_gpx_to_point_models(gpx_file_path: str) -> list[PointModel]:
     for point_type, points in points_with_types.items():
         for latitude, longitude, additional_fields in points:
             if math.isnan(latitude) or math.isnan(longitude):
-                logging.warning(f"Skipping invalid point with attributes: {latitude}, {longitude}")
+                logging.warning(
+                    f"Skipping invalid point with attributes: {latitude}, {longitude}"
+                )
                 continue
-            
+
             # Use the create_from_gpx class method to instantiate PointModel
-            point_model = PointModel.create_from_gpx_data(point_type, latitude, longitude, additional_fields or {})
+            point_model = PointModel.create_from_gpx_data(
+                point_type, latitude, longitude, additional_fields or {}
+            )
             point_models.append(point_model)
-    
+
     return point_models

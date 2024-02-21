@@ -57,13 +57,15 @@ async def process_file(
     try:
         filehandler_result = await handler.process_input()
         if filehandler_result is not None and outputfile is not None:
-            handler.filename = outputfile 
-            handler.process_output(filehandler_result, indentation)  
+            handler.filename = outputfile
+            handler.process_output(filehandler_result, indentation)
+            sys.exit(0)
         elif filehandler_result is not None:
             handler.filename = None
             output_str = handler.process_output(filehandler_result, indentation)
             if output_str is not None:
                 print(output_str)
+                sys.exit(0)
         else:
             print(
                 "Error: File handler returned None. Check the input file path\
@@ -71,7 +73,7 @@ async def process_file(
                 file=sys.stderr,
             )
             sys.exit(1)
-    except (ValueError, OSError) as e:
+    except (ValueError, OSError, RuntimeError) as e:
         print(str(e), file=sys.stderr)
         sys.exit(1)
 

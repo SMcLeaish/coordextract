@@ -4,12 +4,10 @@ from unittest.mock import patch, MagicMock
 from typing import Generator, cast
 from pathlib import Path
 import pytest
-
 # watch for Magika type stubs to be released
 from magika.types import MagikaResult, MagikaOutputFields  # type: ignore
-from coordextract.handler import get_mimetype, inputhandler, outputhandler
-from coordextract import PointModel
-
+from coordextract.iohandler import IOHandler
+from coordextract.models.point import PointModel
 
 @pytest.fixture
 def mock_magicka_identify_path_success() -> Generator[MagicMock, None, None]:
@@ -36,7 +34,8 @@ def test_get_mimetype_success(mock_magicka_identify_path_success: MagicMock) -> 
     with patch(
         "mimetypes.guess_type", return_value=("application/gpx+xml", None)
     ) as mock_mimetypes:
-        mimetype, magika_result = get_mimetype(Path("dummy.gpx"))
+        handler = IOHandler(filename=Path("dummpy.gpx"))
+        mimetype, magika_result = handler.get_mimetype()
         assert (
             mimetype == "application/gpx+xml"
         ), "Should be returned on get_mimetype call"

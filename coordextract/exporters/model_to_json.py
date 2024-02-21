@@ -36,7 +36,7 @@ def point_models_to_json(
     point_models: list[PointModel],
     filename: Optional[str] = None,
     indentation: Optional[int] = None,
-) -> None:
+) -> Optional[str]:
     """Serializes a list of PointModel instances to JSON format and
     writes to a file or prints to stdout.
 
@@ -65,4 +65,4 @@ def point_models_to_json(
         except Exception as e:
             raise OSError("Error writing to file") from e
     else:
-        print(json_str)
+        return json_str
