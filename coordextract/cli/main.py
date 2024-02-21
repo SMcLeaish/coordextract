@@ -22,8 +22,8 @@ from pathlib import Path
 import asyncio
 from typing_extensions import Annotated
 import typer
-from coordextract.iohandler import IOHandler
-from coordextract.converters.latlon_to_mgrs_converter import latlon_to_mgrs
+from coordextract.factory import handler_factory
+from coordextract.converters.latlon_to_mgrs import latlon_to_mgrs
 
 app = typer.Typer()
 
@@ -53,16 +53,17 @@ async def process_file(
         to an unhandled file type or other ValueError, or if the input file handler returns
         None, indicating a failure to process the input file.
     """
-    handler = IOHandler(inputfile)
+    input_handler = handler_factory(inputfile)
     try:
-        filehandler_result = await handler.process_input()
+        filehandler_result = await input_handler.process_input()
         if filehandler_result is not None and outputfile is not None:
-            handler.filename = outputfile
-            handler.process_output(filehandler_result, indentation)
+            output_handler = handler_factory(outputfile)
+            output_handler.filename = outputfile
+            output_handler.process_output(filehandler_result, indentation)
             sys.exit(0)
         elif filehandler_result is not None:
-            handler.filename = None
-            output_str = handler.process_output(filehandler_result, indentation)
+            output_handler = handler_factory()
+            output_str = output_handler.process_output(filehandler_result, indentation)
             if output_str is not None:
                 print(output_str)
                 sys.exit(0)
@@ -73,7 +74,7 @@ async def process_file(
                 file=sys.stderr,
             )
             sys.exit(1)
-    except (ValueError, OSError, RuntimeError) as e:
+    except (ValueError, OSError, RuntimeError, NotImplementedError) as e:
         print(str(e), file=sys.stderr)
         sys.exit(1)
 

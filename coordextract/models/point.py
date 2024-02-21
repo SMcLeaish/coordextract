@@ -4,7 +4,7 @@ formats and coordinates systems."""
 import math
 import logging
 from pydantic import BaseModel
-from coordextract.converters.latlon_to_mgrs_converter import latlon_to_mgrs
+from coordextract.converters.latlon_to_mgrs import latlon_to_mgrs
 
 
 class PointModel(BaseModel):

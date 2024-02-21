@@ -4,7 +4,7 @@
 from pathlib import Path
 from unittest.mock import mock_open, patch
 import pytest
-from coordextract.exporters.model_to_json import point_models_to_json
+from coordextract.converters.model_to_json import point_models_to_json
 from coordextract.models.point import PointModel
 
 
@@ -15,7 +15,10 @@ def example_point_models():
             gpxpoint="waypoint", latitude=0.0, longitude=0.0, mgrs="31U BT 00000 00000"
         ),
         PointModel(
-            gpxpoint="trackpoint", latitude=1.1, longitude=1.1, mgrs="31U BT 11111 11111"
+            gpxpoint="trackpoint",
+            latitude=1.1,
+            longitude=1.1,
+            mgrs="31U BT 11111 11111",
         ),
     ]
 

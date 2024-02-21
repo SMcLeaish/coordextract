@@ -65,7 +65,9 @@ async def async_parse_gpx(
     except OSError as e:
         raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
     except RuntimeError as e:
-        raise RuntimeError(f"Unexpected error processing file {gpx_file_path}: {e}") from e
+        raise RuntimeError(
+            f"Unexpected error processing file {gpx_file_path}: {e}"
+        ) from e
 
     root_tag = xml.tag
     namespace_uri = root_tag[root_tag.find("{") + 1 : root_tag.find("}")]

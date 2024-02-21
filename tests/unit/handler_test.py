@@ -4,10 +4,12 @@ from unittest.mock import patch, MagicMock
 from typing import Generator, cast
 from pathlib import Path
 import pytest
+
 # watch for Magika type stubs to be released
 from magika.types import MagikaResult, MagikaOutputFields  # type: ignore
 from coordextract.iohandler import IOHandler
 from coordextract.models.point import PointModel
+
 
 @pytest.fixture
 def mock_magicka_identify_path_success() -> Generator[MagicMock, None, None]:

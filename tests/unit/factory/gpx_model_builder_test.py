@@ -4,7 +4,7 @@ covering parsing, MGRS conversion, and error handling."""
 import math
 from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
-from coordextract.factory.gpx_model_builder import process_gpx_to_point_models
+from coordextract.converters.gpx_to_model import process_gpx_to_point_models
 
 
 @pytest.mark.asyncio

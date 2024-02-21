@@ -4,7 +4,7 @@ from typing import Generator
 from unittest.mock import patch, MagicMock
 from mgrs.core import MGRSError
 import pytest
-from coordextract.converters.latlon_to_mgrs_converter import latlon_to_mgrs
+from coordextract.converters.latlon_to_mgrs import latlon_to_mgrs
 
 
 @pytest.fixture

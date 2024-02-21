@@ -7,26 +7,9 @@ export data to JSON format with optional indentation.
 For users interested in command-line interaction, this package includes a CLI tool. 
 See the README or use the `--help` option with the CLI tool for usage instructions and options.
 
-Available Functions:
-- latlon_to_mgrs(latitude: float, longitude: float) -> str:
-  Converts a pair of latitude and longitude coordinates to a 10-digit MGRS string.
 
-- inputhandler(filename: str) -> list[PointModel]:
-  Processes an input file based on its MIME type. Currently supports GPX files, converting them 
-  into a list of PointModel instances representing the geographic points.
-
-- outputhandler
-(point_models: list[PointModel], filename: Optional[str], indentation: Optional[int]) -> None:
-  Exports a list of PointModel instances to a JSON file with optional indentation. 
-  If no filename is provided, outputs to stdout.
-
-Example Usage:
->>> from coordextract import latlon_to_mgrs, inputhandler, outputhandler
->>> mgrs_coord = latlon_to_mgrs(20.00, -105.00)
->>> points = asyncio.run(inputhandler('path/to/file.gpx'))
->>> outputhandler(points, 'output.json', 2)
 """
 
-from coordextract.iohandler import IOHandler
+from coordextract.factory import handler_factory
 
-__all__ = ["IOHandler"]
+__all__ = ["handler_factory"]

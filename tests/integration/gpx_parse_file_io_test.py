@@ -14,13 +14,11 @@ async def test_async_parse_gpx_empty_file() -> None:
     Value Error
     """
     empty_file = Path(__file__).parent.parent / "data" / "empty.gpx"
-    
+
     with pytest.raises(ValueError) as exc_info:
         await async_parse_gpx(str(empty_file))
-    
-    assert "GPX file is empty or unreadable" in str(exc_info.value)
 
-    
+    assert "GPX file is empty or unreadable" in str(exc_info.value)
 
 
 @pytest.mark.asyncio

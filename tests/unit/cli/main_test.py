@@ -72,7 +72,7 @@ def test_main_with_inputfile(mock_process_file: MagicMock) -> None:
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.IOHandler")
-async def test_process_file_valid_input(mock_iohandler_class)-> None:
+async def test_process_file_valid_input(mock_iohandler_class) -> None:
     """Tests processing of a valid input file."""
     mock_iohandler_instance = mock_iohandler_class.return_value
     mock_iohandler_instance.process_input = AsyncMock(return_value="some_result")
@@ -83,12 +83,9 @@ async def test_process_file_valid_input(mock_iohandler_class)-> None:
     assert e.value.code == 0
 
 
-
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.IOHandler")
-async def test_process_file_inputhandler_returns_none(
-    mock_iohandler_class
-) -> None:
+async def test_process_file_inputhandler_returns_none(mock_iohandler_class) -> None:
     """Tests the behavior of the process_file function when the input
     handler returns None."""
     mock_iohandler_instance = mock_iohandler_class.return_value
@@ -108,11 +105,11 @@ async def test_process_file_inputhandler_returns_none(
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.IOHandler")
 async def test_process_file_with_value_error_direct_handling(
-    mock_iohandler_class
+    mock_iohandler_class,
 ) -> None:
     """Tests the process_file function's error handling capabilities
     when a ValueError is raised during processing."""
-    mock_iohandler_instance =mock_iohandler_class.return_value 
+    mock_iohandler_instance = mock_iohandler_class.return_value
     mock_iohandler_instance.process_input.side_effect = ValueError("An error occurred")
 
     with patch("sys.stderr", new=io.StringIO()) as mock_stderr:
