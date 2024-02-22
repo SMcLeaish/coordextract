@@ -36,7 +36,7 @@ def point_models_to_json(
     point_models: list[PointModel],
     filename: Optional[str] = None,
     indentation: Optional[int] = None,
-) -> Optional[str]:
+) -> str:
     """Serializes a list of PointModel instances to JSON format and
     writes to a file or prints to stdout.
 
@@ -57,7 +57,7 @@ def point_models_to_json(
     ind = 2 if indentation is None else indentation
     json_str = json.dumps([model.model_dump() for model in point_models], indent=ind)
 
-    if filename:
+    if filename is not None:
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(json_str)

@@ -31,25 +31,21 @@ def test_point_models_to_json_to_file(
 
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
-    assert "Test Point 1" in content
-    assert "Test Point 2" in content
+    assert "31U BT 00000 00000" in content
+    assert "31U BT 11111 11111" in content
 
 
 def test_point_models_to_json_to_stdout(
     example_point_models: list[PointModel], capsys: pytest.CaptureFixture[str]
 ):
-    point_models_to_json(example_point_models, filename=None)
-    captured = capsys.readouterr()
-    assert "Test Point 1" in captured.out
-    assert "Test Point 2" in captured.out
+    json_str = point_models_to_json(example_point_models, filename=None)
+    assert "31U BT 00000 00000" in json_str
+    assert "31U BT 11111 11111" in json_str
 
 
-def test_point_models_to_json_with_indentation(
-    example_point_models: list[PointModel], capsys: pytest.CaptureFixture[str]
-):
-    point_models_to_json(example_point_models, filename=None, indentation=4)
-    captured = capsys.readouterr()
-    assert '    "name": "Test Point 1"' in captured.out
+def test_point_models_to_json_with_indentation(example_point_models: list[PointModel]):
+    json_str = point_models_to_json(example_point_models, filename=None, indentation=4)
+    assert '    "mgrs": "31U BT 00000 00000"' in json_str
 
 
 @patch("builtins.open", new_callable=mock_open)

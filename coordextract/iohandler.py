@@ -13,13 +13,11 @@ class IOHandler(ABC):
 
     @abstractmethod
     async def process_input(self):
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def process_output(self, data, indentation: Optional[int] = None):
-        pass
-
-
+        pass # pragma: no cover
 class GPXHandler(IOHandler):
     async def process_input(self) -> list[PointModel]:
         return await process_gpx_to_point_models(str(self.filename))
@@ -28,9 +26,6 @@ class GPXHandler(IOHandler):
         raise NotImplementedError(
             "Only GPX input is supported, GPX output processing is not supported."
         )
-
-
-
 class JSONHandler(IOHandler):
     async def process_input(self):
         raise NotImplementedError(

@@ -8,8 +8,6 @@ from .iohandler import IOHandler, GPXHandler, JSONHandler
 
 def get_mimetype(filename: Path) -> Tuple[Optional[str], Optional[MagikaResult]]:
     m = Magika()
-    if filename is None:
-        return None, None
     mimetype, _ = mimetypes.guess_type(str(filename))
     magika_result = m.identify_path(filename)
     return mimetype, magika_result
