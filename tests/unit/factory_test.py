@@ -1,7 +1,13 @@
+"""
+This module contains unit tests for the factory module in the coordextract package.
+"""
+
+# pylint: disable=R0903
+
 from pathlib import Path
-from typing import Literal, Type, cast
-import pytest
+from typing import Literal, Type, cast, Any
 from unittest.mock import patch, MagicMock
+import pytest
 from coordextract.factory import (
     MagikaResult,
     IOHandler,
@@ -21,11 +27,23 @@ from coordextract.factory import (
 )
 @patch("coordextract.factory.Magika")
 def test_get_mimetype(
-    mock_magika_class,
+    mock_magika_class: MagicMock,
     file_path: Path,
     expected_mime: Literal["application/gpx+xml", "application/json"],
     magika_mime_type: Literal["text/xml"] | None,
-):
+) -> None:
+    """
+    Test the get_mimetype function.
+
+    Args:
+        mock_magika_class: Mocked Magika class.
+        file_path: Path to the file.
+        expected_mime: Expected MIME type.
+        magika_mime_type: Magika MIME type.
+
+    Returns:
+        None
+    """
     mock_output = MockOutput(mime_type=magika_mime_type)
     mock_magika_result = MockMagikaResult(output=mock_output)
     mock_magika_instance = mock_magika_class.return_value
@@ -52,13 +70,26 @@ def test_get_mimetype(
 )
 @patch("coordextract.factory.get_mimetype")
 def test_handler_factory(
-    mock_get_mimetype,
+    mock_get_mimetype: MagicMock,
     file_name: Literal["test.gpx", "test.json"] | None,
     expected_handler_type: Type[IOHandler],
     mime_type: Literal["application/gpx+xml", "application/json"] | None,
     magika_mime_type: Literal["text/xml"] | None,
-):
-    mock_output = MockOutput(mime_type=magika_mime_type)
+) -> None:
+    """
+    Test the handler_factory function.
+
+    Args:
+        mock_get_mimetype: Mocked get_mimetype function.
+        file_name: Name of the file.
+        expected_handler_type: Expected type of the handler.
+        mime_type: MIME type of the file.
+        magika_mime_type: Magika MIME type.
+
+    Returns:
+        None
+    """
+    mock_output = MockOutput(mime_type=magika_mime_type or "")
     mock_magika_result = MockMagikaResult(output=mock_output)
     mock_get_mimetype.return_value = (mime_type, mock_magika_result)
     file_path = Path(file_name) if file_name is not None else None
@@ -73,7 +104,16 @@ def test_handler_factory(
 
 
 @patch("coordextract.factory.get_mimetype")
-def test_handler_factory_indeterminate_file_type(mock_get_mimetype):
+def test_handler_factory_indeterminate_file_type(mock_get_mimetype: MagicMock) -> None:
+    """
+    Test the handler_factory function when the file type is indeterminate.
+
+    Args:
+        mock_get_mimetype: Mocked get_mimetype function.
+
+    Returns:
+        None
+    """
     mock_get_mimetype.return_value = (None, None)
     with pytest.raises(ValueError) as excinfo:
         handler_factory(Path("indeterminate.file"))
@@ -81,7 +121,16 @@ def test_handler_factory_indeterminate_file_type(mock_get_mimetype):
 
 
 @patch("coordextract.factory.get_mimetype")
-def test_handler_factory_unsupported_file_type(mock_get_mimetype):
+def test_handler_factory_unsupported_file_type(mock_get_mimetype: MagicMock) -> None:
+    """
+    Test the handler_factory function when the file type is unsupported.
+
+    Args:
+        mock_get_mimetype: Mocked get_mimetype function.
+
+    Returns:
+        None
+    """
     mock_get_mimetype.return_value = ("application/unsupported", MagicMock())
     with pytest.raises(ValueError) as excinfo:
         handler_factory(Path("unsupported.file"))
@@ -90,10 +139,24 @@ def test_handler_factory_unsupported_file_type(mock_get_mimetype):
 
 
 class MockMagikaResult:
-    def __init__(self, output):
+    """
+    A mock class representing the result of a Magika operation.
+
+    Attributes:
+        output (Any): The output of the Magika operation.
+    """
+
+    def __init__(self, output: Any) -> None:
         self.output = output
 
 
 class MockOutput:
-    def __init__(self, mime_type):
+    """
+    A class representing mock output with a specified MIME type.
+
+    Attributes:
+        mime_type (str): The MIME type of the mock output.
+    """
+
+    def __init__(self, mime_type: Any) -> None:
         self.mime_type = mime_type

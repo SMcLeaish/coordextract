@@ -2,6 +2,7 @@
 covering parsing, MGRS conversion, and error handling."""
 
 from unittest.mock import AsyncMock, patch
+from typing import Any
 import pytest
 from coordextract.converters.gpx_to_model import process_gpx_to_point_models
 
@@ -18,7 +19,7 @@ from coordextract.converters.gpx_to_model import process_gpx_to_point_models
 @patch("coordextract.converters.gpx_to_model.async_parse_gpx", new_callable=AsyncMock)
 async def test_process_gpx_to_point_models_with_data(
     mock_async_parse_gpx: AsyncMock,
-    return_value: list[tuple[float, float, dict]],
+    return_value: list[tuple[float, float, dict[Any, Any]]],
     expected_length: int,
 ) -> None:
     """Tests the processing of GPX data to PointModels, ensuring correct

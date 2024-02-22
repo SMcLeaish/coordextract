@@ -8,6 +8,7 @@ from coordextract.parsers.gpx_parse import async_parse_gpx
 @pytest.mark.asyncio
 async def test_async_parse_gpx_empty_file() -> None:
     """Test that parsing an empty GPX file raises a ValueError.
+
     Args:
     empty_file: empty .gpx file
     Raises:

@@ -72,8 +72,9 @@ def test_main_with_inputfile(mock_process_file: MagicMock) -> None:
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.handler_factory")
-async def test_process_file_valid_input(mock_factory) -> None:
-    """Tests processing of a valid input and outputfile using a mock handler factory."""
+async def test_process_file_valid_input(mock_factory: MagicMock) -> None:
+    """Tests processing of a valid input and outputfile using a mock
+    handler factory."""
     mock_input_handler_instance = AsyncMock()
     mock_input_handler_instance.process_input = AsyncMock(return_value="some_result")
     mock_output_handler_instance = AsyncMock()
@@ -95,7 +96,7 @@ async def test_process_file_valid_input(mock_factory) -> None:
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.handler_factory")
-async def test_process_file_inputhandler_returns_none(mock_factory) -> None:
+async def test_process_file_inputhandler_returns_none(mock_factory: MagicMock) -> None:
     """Tests the behavior of the process_file function when the input
     handler returns None."""
     mock_input_handler_instance = AsyncMock()
@@ -116,7 +117,7 @@ async def test_process_file_inputhandler_returns_none(mock_factory) -> None:
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.handler_factory")
 async def test_process_file_with_value_error_direct_handling(
-    mock_factory,
+    mock_factory: MagicMock,
 ) -> None:
     """Tests the process_file function's error handling capabilities
     when a ValueError is raised during processing."""
@@ -139,10 +140,10 @@ async def test_process_file_with_value_error_direct_handling(
 @pytest.mark.asyncio
 @patch("coordextract.cli.main.handler_factory")
 async def test_process_file_calls_outputhandler_without_outputfile(
-    mock_factory,
+    mock_factory: MagicMock,
 ) -> None:
     """Tests whether the process_file function correctly calls the
-    output handler with the expected arguments"""
+    output handler with the expected arguments."""
     mock_result = MagicMock()
     mock_input_handler_instance = AsyncMock()
     mock_input_handler_instance.process_input = AsyncMock(return_value=mock_result)

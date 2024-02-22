@@ -38,17 +38,24 @@ async def process_gpx_to_point_models(gpx_file_path: str) -> list[PointModel]:
     """
 
     waypoints, trackpoints, routepoints = await async_parse_gpx(gpx_file_path)
+    waypoints = waypoints if waypoints is not None else []
+    trackpoints = trackpoints if trackpoints is not None else []
+    routepoints = routepoints if routepoints is not None else []
+
     points_with_types = {
         "waypoint": waypoints,
         "trackpoint": trackpoints,
         "routepoint": routepoints,
     }
+
     point_models = []
     for point_type, points in points_with_types.items():
-        for latitude, longitude, additional_fields in points:
-            point_model = PointModel.create_from_gpx_data(
-                point_type, latitude, longitude, additional_fields or {}
-            )
-            point_models.append(point_model)
-
+        for point in points:
+            if isinstance(point, (list, tuple)) and len(point) == 3:
+                latitude, longitude, additional_fields = point
+                point_model = PointModel.create_from_gpx_data(
+                    point_type, latitude, longitude, additional_fields or {}
+                )
+            if point_model is not None:
+                point_models.append(point_model)
     return point_models

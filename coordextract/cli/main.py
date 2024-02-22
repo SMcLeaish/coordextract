@@ -22,6 +22,7 @@ from pathlib import Path
 import asyncio
 from typing_extensions import Annotated
 import typer
+from pydantic import ValidationError
 from coordextract.factory import handler_factory
 from coordextract.converters.latlon_to_mgrs import latlon_to_mgrs
 
@@ -75,7 +76,13 @@ async def process_file(
                 file=sys.stderr,
             )
             sys.exit(1)
-    except (ValueError, OSError, RuntimeError, NotImplementedError) as e:
+    except (
+        ValueError,
+        OSError,
+        RuntimeError,
+        NotImplementedError,
+        ValidationError,
+    ) as e:
         print(str(e), file=sys.stderr)
         sys.exit(1)
 
