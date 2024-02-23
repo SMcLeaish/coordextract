@@ -28,7 +28,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from pydantic import ValidationError
 from pytest_mock import MockerFixture
-from coordextract.models.point import PointModel
+from coordextract.point import PointModel
 
 
 @pytest.fixture

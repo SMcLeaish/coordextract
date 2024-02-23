@@ -13,7 +13,7 @@ from pathlib import Path
 import io
 import pytest
 from typer.testing import CliRunner
-from coordextract.cli.main import app, process_file
+from coordextract.cli.cli import app, process_file
 
 runner = CliRunner()
 

@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 # watch for Magika type stubs to be released
-from coordextract.iohandler import GPXHandler, JSONHandler
-from coordextract.models.point import PointModel
+from coordextract.coordextract import GPXHandler, JSONHandler
+from coordextract.point import PointModel
 
 
 async def mock_process_gpx_to_point_models(_file_path: str) -> list[PointModel]:

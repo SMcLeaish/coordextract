@@ -9,6 +9,6 @@ a CLI tool. See the README or use the `--help` option with the CLI tool
 for usage instructions and options.
 """
 
-from coordextract.factory import handler_factory
+from .coordextract import CoordExtract
 
-__all__ = ["handler_factory"]
+process_coords = CoordExtract.process

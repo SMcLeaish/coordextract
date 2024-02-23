@@ -42,7 +42,7 @@ mypy_path = "typings"
 files = "coordextract, tests"
 
 [tool.poetry.scripts]
-coordextract = "coordextract.cli.main:app"
+coordextract = "coordextract.cli:app"
 
 
 [build-system]

@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import mock_open, patch, MagicMock
 import pytest
 from coordextract.converters.model_to_json import point_models_to_json
-from coordextract.models.point import PointModel
+from coordextract.point import PointModel
 
 
 @pytest.fixture
