@@ -2,8 +2,11 @@ from typing import Optional, Tuple, Any
 from pathlib import Path
 from abc import ABC, abstractmethod
 import mimetypes
+import os
 import json
 import aiofiles
+import asyncio
+from concurrent.futures import ProcessPoolExecutor
 from lxml import etree
 from magika.magika import Magika  # type: ignore
 from magika.types import MagikaResult  # type: ignore
@@ -13,13 +16,15 @@ from .point import PointModel
 class CoordExtract(ABC):
     """Abstract base class for input/output handlers."""
     
-    def __init__(self, argument: Optional[Path] = None):
+    def __init__(self, filepath: Optional[Path] = None, concurrency: Optional[bool] = False):
         """Initializes the CoordExtract with an optional filename.
 
         Args:
             filename (Optional[Path]): The filename to be processed. Defaults to None.
         """
-        self.argument = argument
+        self.filename = filepath
+        self.concurrency = concurrency
+
 
     @abstractmethod
     async def process_input(self) -> Optional[list[PointModel]]:
@@ -42,6 +47,7 @@ class CoordExtract(ABC):
         input_argument: Path,
         output_argument: Optional[Path] = None,
         indentation: Optional[int] = None,
+        concurrency: Optional[bool] = False,
     ) -> Optional[str]:
         """Processes a geographic data file and outputs the results to a
         specified file or stdout.
@@ -62,12 +68,12 @@ class CoordExtract(ABC):
         Raises:
             ValueError: If the file type is unsupported or the file type cannot be determined.
         """
-        input_handler = cls.factory(input_argument)
+        input_handler = cls.factory(input_argument, concurrency)
         filehandler_result = await input_handler.process_input()
         if filehandler_result is not None and output_argument is not None:
             output_handler = cls.factory(output_argument)
             if output_argument is not None:
-                output_handler.argument = output_argument
+                output_handler.filename = output_argument
                 await output_handler.process_output(filehandler_result, indentation)
                 return None
         elif filehandler_result is not None:
@@ -85,7 +91,7 @@ class CoordExtract(ABC):
         return None
 
     @classmethod
-    def factory(cls, factory_argument: Optional[Path] = None) -> "CoordExtract":
+    def factory(cls, filename: Optional[Path] = None, concurrency: Optional[bool]=False) -> "CoordExtract":
         """Factory function to create an appropriate CoordExtract based
         on the file type.
 
@@ -98,19 +104,19 @@ class CoordExtract(ABC):
         Raises:
             ValueError: If the file type is unsupported or the file type cannot be determined.
         """
-        if factory_argument is None:
+        if filename is None:
             return JSONHandler()
-        mimetype, magika_result = cls._get_mimetype(factory_argument)
+        mimetype, magika_result = cls._get_mimetype(filename)
         if mimetype is None or magika_result is None:
-            raise ValueError(f"Could not determine the filetype of: {factory_argument}")
+            raise ValueError(f"Could not determine the filetype of: {filename}")
         if (
             mimetype == "application/gpx+xml"
             and magika_result.output.mime_type == "text/xml"
         ):
-            return GPXHandler(factory_argument)
+            return GPXHandler(filename, concurrency)
         if mimetype == "application/json":
-            return JSONHandler(factory_argument)
-        raise ValueError(f"Unsupported file type for {factory_argument}")
+            return JSONHandler(filename)
+        raise ValueError(f"Unsupported file type for {filename}")
 
     @staticmethod
     def _get_mimetype(filename: Path) -> Tuple[Optional[str], Optional[MagikaResult]]:
@@ -142,7 +148,10 @@ class GPXHandler(CoordExtract):
         Returns:
             list[PointModel]: The list of PointModel objects extracted from the GPX file.
         """
-        return await self._process_gpx_to_point_models(str(self.argument))
+        print(self.concurrency)
+        if self.concurrency:
+            return await self._concurrent_process_gpx(str(self.filename))
+        return await self._process_gpx(str(self.filename))
 
     async def process_output(
         self, point_models: list[PointModel], indentation: Optional[int] = None
@@ -160,32 +169,94 @@ class GPXHandler(CoordExtract):
         raise NotImplementedError(
             "Only GPX input is supported, GPX output processing is not supported."
         )
-
-    async def _process_gpx_to_point_models(
-        self, gpx_file_path: str
-    ) -> list[PointModel]:
-        """Asynchronously processes a GPX file, extracting waypoints,
-        trackpoints, and routepoints, and converts them into a list of
-        PointModel instances.
-
-        Each geographic point is converted to MGRS format, and invalid points (with non-numeric
-        coordinates) are logged and skipped. This function ensures that all valid points from
-        the GPX file are accurately represented as PointModel instances, suitable for further
-        processing or analysis.
+    async def _concurrent_process_gpx(self, gpx_file_path: str) -> list[PointModel]:
+        """Asynchronously reads the contents of a GPX file and returns the
+        raw XML data.
 
         Args:
             gpx_file_path (str): The file path to the GPX file to be processed.
 
         Returns:
-            list[PointModel]: A list of PointModel instances representing the processed geographic
-            points.
+            bytes: The raw XML data from the GPX file.
 
         Raises:
-            ValueError: If the GPX file cannot be parsed or if any points contain invalid
-            coordinates.
+            OSError: If an error occurs while reading the file.
         """
+        try:
+            async with aiofiles.open(gpx_file_path, "rb") as file:
+                xml_data = await file.read()
+            loop = asyncio.get_running_loop()
+            with ProcessPoolExecutor() as pool:
+                point_models = await loop.run_in_executor(pool, self._parse_gpx, xml_data)
+        except OSError as e:
+            raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
+        return point_models
+    
+    async def _process_gpx(self, gpx_file_path: str) -> list[PointModel]:
+        """Asynchronously reads the contents of a GPX file and returns the
+        raw XML data.
 
-        waypoints, trackpoints, routepoints = await self._async_parse_gpx(gpx_file_path)
+        Args:
+            gpx_file_path (str): The file path to the GPX file to be processed.
+
+        Returns:
+            bytes: The raw XML data from the GPX file.
+
+        Raises:
+            OSError: If an error occurs while reading the file.
+        """
+        try:
+            async with aiofiles.open(gpx_file_path, "rb") as file:
+                xml_data = await file.read()
+                point_models = self._parse_gpx(xml_data)
+        except OSError as e:
+            raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
+        return point_models
+        
+
+    def _parse_gpx(
+        self, xml_data: bytes
+    ) -> list[PointModel]:
+        """Function that receives a GPX file as input and returns lists
+        of waypoints, trackpoints, and routepoints as tuples of
+        [latitude, longitude].
+
+        Args:
+        gpx_file_path (str): Path to the GPX file to be parsed.
+        Returns:
+        Three lists of tuples: waypoints, trackpoints, and routepoints.
+        """
+        print("PID: ", os.getpid())
+        parser = etree.XMLParser(
+            resolve_entities=False, no_network=True, huge_tree=False
+        )
+        
+        if not xml_data.strip():
+            raise ValueError("GPX file is empty or unreadable")
+        try:
+            xml = etree.fromstring(xml_data, parser)
+        except etree.XMLSyntaxError as e:
+            raise ValueError(f"GPX file contains invalid XML: {e}") from e
+        
+
+        root_tag = xml.tag
+        namespace_uri = root_tag[root_tag.find("{") + 1 : root_tag.find("}")]
+        ns_map = {"gpx": namespace_uri}
+        waypoints = [
+            self._parse_point(wpt)
+            for wpt in xml.findall(".//gpx:wpt", namespaces=ns_map)
+            if self._parse_point(wpt) is not None
+        ]
+        trackpoints = [
+            self._parse_point(trkpt)
+            for trkpt in xml.findall(".//gpx:trkpt", namespaces=ns_map)
+            if self._parse_point(trkpt) is not None
+        ]
+        routepoints = [
+            self._parse_point(rtept)
+            for rtept in xml.findall(".//gpx:rtept", namespaces=ns_map)
+            if self._parse_point(rtept) is not None
+        ]
         waypoints = waypoints if waypoints is not None else []
         trackpoints = trackpoints if trackpoints is not None else []
         routepoints = routepoints if routepoints is not None else []
@@ -207,7 +278,7 @@ class GPXHandler(CoordExtract):
                 if point_model is not None:
                     point_models.append(point_model)
         return point_models
-
+    
     def _parse_point(self, point: etree._Element) -> Optional[Coordinates]:
         """Extracts the latitude and longitude from a GPX point element.
 
@@ -229,54 +300,6 @@ class GPXHandler(CoordExtract):
         except ValueError as e:
             raise ValueError(f"Invalid coordinate value encountered: {e}") from e
         return None
-
-    async def _async_parse_gpx(
-        self, gpx_file_path: str
-    ) -> Tuple[CoordinatesList, CoordinatesList, CoordinatesList]:
-        """Function that receives a GPX file as input and returns lists
-        of waypoints, trackpoints, and routepoints as tuples of
-        [latitude, longitude].
-
-        Args:
-        gpx_file_path (str): Path to the GPX file to be parsed.
-        Returns:
-        Three lists of tuples: waypoints, trackpoints, and routepoints.
-        """
-        parser = etree.XMLParser(
-            resolve_entities=False, no_network=True, huge_tree=False
-        )
-        try:
-            async with aiofiles.open(gpx_file_path, "rb") as file:
-                xml_data = await file.read()
-            if not xml_data.strip():
-                raise ValueError("GPX file is empty or unreadable")
-            try:
-                xml = etree.fromstring(xml_data, parser)
-            except etree.XMLSyntaxError as e:
-                raise ValueError(f"GPX file contains invalid XML: {e}") from e
-        except OSError as e:
-            raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
-
-        root_tag = xml.tag
-        namespace_uri = root_tag[root_tag.find("{") + 1 : root_tag.find("}")]
-        ns_map = {"gpx": namespace_uri}
-        waypoints = [
-            self._parse_point(wpt)
-            for wpt in xml.findall(".//gpx:wpt", namespaces=ns_map)
-            if self._parse_point(wpt) is not None
-        ]
-        trackpoints = [
-            self._parse_point(trkpt)
-            for trkpt in xml.findall(".//gpx:trkpt", namespaces=ns_map)
-            if self._parse_point(trkpt) is not None
-        ]
-        routepoints = [
-            self._parse_point(rtept)
-            for rtept in xml.findall(".//gpx:rtept", namespaces=ns_map)
-            if self._parse_point(rtept) is not None
-        ]
-        return waypoints, trackpoints, routepoints
-
 
 class JSONHandler(CoordExtract):
     """Input/output handler for JSON files."""
@@ -305,9 +328,9 @@ class JSONHandler(CoordExtract):
         Returns:
             Optional[str]: The JSON representation of the PointModel objects.
         """
-        if self.argument is not None:
+        if self.filename is not None:
             await self._point_models_to_json(
-                point_models, str(self.argument), indentation
+                point_models, str(self.filename), indentation
             )
             return None
         return await self._point_models_to_json(point_models, None, indentation)

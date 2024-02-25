@@ -20,6 +20,7 @@ import sys
 from typing import Optional
 from pathlib import Path
 import asyncio
+import time
 import typer
 from pydantic import ValidationError
 from coordextract import process_coords as pc
@@ -28,7 +29,7 @@ from coordextract import process_coords as pc
 app = typer.Typer()
 
 async def process(
-    inputfile: Path, outputfile: Optional[Path], indentation: Optional[int]
+    inputfile: Path, outputfile: Optional[Path], indentation: Optional[int], concurrency: Optional[bool]
 ) -> Optional[str]:
     """Asynchronously processes the input file and writes the JSON
     output to a file or prints it to the console.
@@ -42,22 +43,24 @@ async def process(
         str: The JSON string.
     """
 
-    json_str = await pc(inputfile, outputfile, indentation)
+    json_str = await pc(inputfile, outputfile, indentation, concurrency)
     if json_str is not None:
         print(json_str)
     return None
-async def process_batch(files: list[Path], outputdir: Path, indentation: Optional[int]) -> None:
+async def process_batch(files: list[Path], outputdir: Path, indentation: Optional[int], concurrency: Optional[bool]) -> None:
     """Processes a batch of files concurrently."""
+    start_time = time.time()
     outputdir.mkdir(parents=True, exist_ok=True)
     tasks = [
-        asyncio.create_task(pc(file, outputdir / f"{file.stem}.json", indentation))
+        asyncio.create_task(pc(file, outputdir / f"{file.stem}.json", indentation, concurrency))
         for file in files
     ]
     await asyncio.gather(*tasks)
-async def process_directory(inputdir: Path, outputdir: Path, indentation: Optional[int]) -> None:
+    print(f"Processed {len(files)} files in {time.time() - start_time:.2f} seconds.")
+async def process_directory(inputdir: Path, outputdir: Path, indentation: Optional[int], concurrency: Optional[bool]) -> None:
     """Processes all GPX files in a directory."""
     files = [file for file in inputdir.iterdir() if file.suffix == ".gpx"]
-    await process_batch(files, outputdir, indentation)
+    await process_batch(files, outputdir, indentation, concurrency)
 
 @app.command()
 def main(
@@ -71,6 +74,9 @@ def main(
     ),
     indentation: Optional[int] = typer.Option(
         2, "--indent", "-i", help="Indentation level for the JSON output."
+    ),
+    concurrency: Optional[bool] = typer.Option(
+        False, "--concurrency", "-c", help="Use cpu concurrency for batch processessing large datasets."
     )
 ) -> None:
     """Accepts a GPX file or directory as input and converts the coordinates to JSON format.
@@ -93,16 +99,14 @@ def main(
         if len(inputs) == 1 and inputs[0].is_dir():
             inputdir = inputs[0]
             outputdir = output or inputdir / "coordextract_output"  
-            asyncio.run(process_directory(inputdir, outputdir, indentation))
+            asyncio.run(process_directory(inputdir, outputdir, indentation, concurrency))
         else:
             if len(inputs) == 1:
                 inputfile = inputs[0]
-                asyncio.run(process(inputfile, output, indentation))
+                asyncio.run(process(inputfile, output, indentation, concurrency))
             else:
                 outputdir = output or Path(".")  
-                asyncio.run(process_batch(inputs, outputdir, indentation))
-
-        typer.echo("Processing completed.")
+                asyncio.run(process_batch(inputs, outputdir, indentation, concurrency))
     except (
         ValueError,
         OSError,
