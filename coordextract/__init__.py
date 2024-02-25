@@ -9,6 +9,7 @@ a CLI tool. See the README or use the `--help` option with the CLI tool
 for usage instructions and options.
 """
 
-from .coordextract import CoordExtract
+from .core import CoordExtract
 
-process_coords = CoordExtract.process
+process_coords = CoordExtract.process_coords
+__all__ = ["process_coords"]

@@ -1,23 +1,23 @@
 """This module contains unit tests for the PointModel class in the
 coordextract.models.point module.
 
-The PointModel class represents a point with latitude and longitude 
+The PointModel class represents a point with latitude and longitude
 coordinates, along with additional fields.
-The unit tests in this module cover various scenarios for creating 
+The unit tests in this module cover various scenarios for creating
 PointModel objects and validating the latitude and longitude values.
 
 The module includes the following test cases:
-- test_create_from_gpx_data_success: Tests the create_from_gpx_data 
+- test_create_from_gpx_data_success: Tests the create_from_gpx_data
 method of the PointModel class with valid point data.
-- test_create_from_gpx_data_invalid: Tests the create_from_gpx_data 
+- test_create_from_gpx_data_invalid: Tests the create_from_gpx_data
 method of the PointModel class with invalid point data.
-- test_create_from_gpx_data_includes_dynamic_fields: Tests that the 
-create_from_gpx_data method includes dynamic fields in the created 
+- test_create_from_gpx_data_includes_dynamic_fields: Tests that the
+create_from_gpx_data method includes dynamic fields in the created
 point model object.
 - test_latitude_validation: Tests the validation of the latitude value.
 - test_longitude_validation: Tests the validation of the longitude value.
 
-The module also includes fixture functions for generating valid and 
+The module also includes fixture functions for generating valid and
 invalid point data, as well as a mock function for latlon_to_mgrs.
 
 Note: This module requires the pytest, pydantic, and pytest_mock libraries to run the tests.
@@ -124,8 +124,8 @@ async def test_create_from_gpx_data_includes_dynamic_fields() -> None:
 
 @pytest.fixture
 def mock_latlon_to_mgrs(mocker: MockerFixture) -> None:
-    """
-    Mocks the latlon_to_mgrs function and returns a predefined MGRS value.
+    """Mocks the latlon_to_mgrs function and returns a predefined MGRS
+    value.
 
     Args:
         mocker (MockerFixture): The mocker fixture object.

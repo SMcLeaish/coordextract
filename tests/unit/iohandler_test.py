@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 # watch for Magika type stubs to be released
-from coordextract.coordextract import GPXHandler, JSONHandler
+from coordextract.core import GPXHandler, JSONHandler
 from coordextract.point import PointModel
 
 
@@ -24,8 +24,7 @@ async def mock_process_gpx_to_point_models(_file_path: str) -> list[PointModel]:
 @pytest.mark.asyncio
 @patch("coordextract.iohandler.process_gpx_to_point_models", new_callable=AsyncMock)
 async def test_gpxhandler_process_input(mock_process_gpx: MagicMock) -> None:
-    """
-    Test case for the `process_input` method of GPXHandler class.
+    """Test case for the `process_input` method of GPXHandler class.
 
     This test verifies that the `process_input` method returns an empty list when the
     `mock_process_gpx` function is called with the "test.gpx" file.
@@ -44,9 +43,8 @@ async def test_gpxhandler_process_input(mock_process_gpx: MagicMock) -> None:
 
 
 def test_gpxhandler_process_output_raises() -> None:
-    """
-    Test case to verify that GPXHandler's process_output method raises NotImplementedError.
-    """
+    """Test case to verify that GPXHandler's process_output method
+    raises NotImplementedError."""
     handler = GPXHandler(Path("test.gpx"))
     with pytest.raises(NotImplementedError):
         handler.process_output([], None)
@@ -54,9 +52,8 @@ def test_gpxhandler_process_output_raises() -> None:
 
 @pytest.mark.asyncio
 async def test_jsonhandler_process_input_raises() -> None:
-    """
-    Test case to verify that process_input raises NotImplementedError when called.
-    """
+    """Test case to verify that process_input raises NotImplementedError
+    when called."""
     handler = JSONHandler(Path("test.json"))
     with pytest.raises(NotImplementedError):
         await handler.process_input()
@@ -64,8 +61,8 @@ async def test_jsonhandler_process_input_raises() -> None:
 
 @patch("coordextract.iohandler.point_models_to_json")
 def test_jsonhandler_process_output(mock_to_json: MagicMock) -> None:
-    """
-    Test case for the `process_output` method of the `JSONHandler` class.
+    """Test case for the `process_output` method of the `JSONHandler`
+    class.
 
     Args:
         mock_to_json (MagicMock): A mock object for the `to_json` function.
@@ -82,8 +79,8 @@ def test_jsonhandler_process_output(mock_to_json: MagicMock) -> None:
 
 @patch("coordextract.iohandler.point_models_to_json")
 def test_jsonhandler_process_output_no_file(mock_to_json: MagicMock) -> None:
-    """
-    Test case for the `process_output` method of the `JSONHandler` class when no file is provided.
+    """Test case for the `process_output` method of the `JSONHandler`
+    class when no file is provided.
 
     Args:
         mock_to_json (MagicMock): A MagicMock object for the `to_json` function.
