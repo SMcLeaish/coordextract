@@ -64,7 +64,7 @@ class CoordExtract(ABC):
             should be saved. If None, the output will be printed to stdout.
 
             indentation (Optional[int]): The number of spaces used for JSON output indentation.
-            Defaults to 2
+            Defaults to None. 
 
         Raises:
             ValueError: If the file type is unsupported or the file type cannot be determined.
@@ -152,7 +152,6 @@ class GPXHandler(CoordExtract):
         Returns:
             list[PointModel]: The list of PointModel objects extracted from the GPX file.
         """
-        print(self.concurrency)
         if self.concurrency:
             return await self._concurrent_process_gpx(str(self.filename))
         return await self._process_gpx(str(self.filename))
@@ -192,8 +191,9 @@ class GPXHandler(CoordExtract):
                 xml_data = await file.read()
             loop = asyncio.get_running_loop()
             with ProcessPoolExecutor() as pool:
+                concurrent = True
                 point_models = await loop.run_in_executor(
-                    pool, self._parse_gpx, xml_data
+                    pool, self._parse_gpx, concurrent, xml_data
                 )
         except OSError as e:
             raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
@@ -215,12 +215,13 @@ class GPXHandler(CoordExtract):
         try:
             async with aiofiles.open(gpx_file_path, "rb") as file:
                 xml_data = await file.read()
-                point_models = self._parse_gpx(xml_data)
+                concurrent = False
+                point_models = self._parse_gpx(concurrent, xml_data)
         except OSError as e:
             raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
         return point_models
 
-    def _parse_gpx(self, xml_data: bytes) -> list[PointModel]:
+    def _parse_gpx(self, concurrent: bool, xml_data: bytes) -> list[PointModel]:
         """Function that receives a GPX file as input and returns lists
         of waypoints, trackpoints, and routepoints as tuples of
         [latitude, longitude].
@@ -230,7 +231,6 @@ class GPXHandler(CoordExtract):
         Returns:
         Three lists of tuples: waypoints, trackpoints, and routepoints.
         """
-        print("PID: ", os.getpid())
         parser = etree.XMLParser(
             resolve_entities=False, no_network=True, huge_tree=False
         )
@@ -275,6 +275,8 @@ class GPXHandler(CoordExtract):
             for point in points:
                 if isinstance(point, (list, tuple)) and len(point) == 3:
                     latitude, longitude, additional_fields = point
+                    if concurrent is not None and additional_fields is not None:
+                        additional_fields['concurrency'] = concurrent
                     point_model = PointModel.create_from_gpx_data(
                         point_type, latitude, longitude, additional_fields or {}
                     )
@@ -362,9 +364,8 @@ class JSONHandler(CoordExtract):
         Raises:
             OSError: If an error occurs while writing the JSON string to the file.
         """
-        ind = 2 if indentation is None else indentation
         json_str = json.dumps(
-            [model.model_dump() for model in point_models], indent=ind
+            [model.model_dump() for model in point_models], indent=indentation
         )
 
         if filename is not None:

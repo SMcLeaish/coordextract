@@ -60,7 +60,6 @@ async def process_batch(
     concurrency: Optional[bool],
 ) -> None:
     """Processes a batch of files concurrently."""
-    start_time = time.time()
     outputdir.mkdir(parents=True, exist_ok=True)
     tasks = [
         asyncio.create_task(
@@ -69,7 +68,6 @@ async def process_batch(
         for file in files
     ]
     await asyncio.gather(*tasks)
-    print(f"Processed {len(files)} files in {time.time() - start_time:.2f} seconds.")
 
 
 async def process_directory(
@@ -98,7 +96,7 @@ def main(
         None, "--output", "-o", help="Output file or directory."
     ),
     indentation: Optional[int] = typer.Option(
-        2, "--indent", "-i", help="Indentation level for the JSON output."
+        None, "--indent", "-i", help="Indentation level for the JSON output."
     ),
     concurrency: Optional[bool] = typer.Option(
         False,
@@ -117,12 +115,12 @@ def main(
     Options:
         --file, -f TEXT     The file path to process. Accepted formats: gpx
         --out, -o TEXT      Accepted formats: json
-        --indent, -i TEXT   Optionally add indentation level to json. Defaults to 2.
+        --indent, -i TEXT   Optionally add indentation level to json. Defaults to None.
 
     Args:
         inputfile (Path): The input GPX file or directory to process.
         outputfile (Optional[Path]): The output JSON file for file processing mode.
-        indentation (Optional[int]): The indentation level for the JSON output. Defaults to 2 spaces.
+        indentation (Optional[int]): The indentation level for the JSON output. Defaults to None.
     """
     try:
         if len(inputs) == 1 and inputs[0].is_dir():
