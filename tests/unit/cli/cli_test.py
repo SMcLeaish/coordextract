@@ -41,6 +41,7 @@ def test_main_with_inputfile(mock_process: MagicMock) -> None:
     )
     assert result.exit_code == 0
 
+
 @patch("coordextract.cli.process")
 def test_main_with_bad_value(mock_process: MagicMock) -> None:
     """Test the main function with an input file."""
@@ -61,6 +62,7 @@ def test_main_with_bad_value(mock_process: MagicMock) -> None:
         Path("path/to/inputfile.gpx"), Path("path/to/outputfile.json"), 2
     )
     assert result.exit_code == 1
+
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.pc")
@@ -109,4 +111,3 @@ async def test_process_raises_exception(mock_pc: AsyncMock) -> None:
         await process(inputfile, outputfile, indentation)
 
     assert "Test exception" in str(excinfo.value)
-

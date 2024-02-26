@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Literal, Type, cast, Any
 from unittest.mock import patch, MagicMock
 import pytest
-from magika.types import MagikaResult # type: ignore
+from magika.types import MagikaResult  # type: ignore
 from coordextract.core import (
     CoordExtract,
     GPXHandler,
@@ -48,10 +48,13 @@ def test_get_mimetype(
     magika_result = cast(MagikaResult, magika_result)
     assert mimetype == expected_mime, "MIME type mismatch"
     if magika_mime_type is not None:
-        assert magika_result.output.mime_type == magika_mime_type, "Magika MIME type mismatch"
+        assert (
+            magika_result.output.mime_type == magika_mime_type
+        ), "Magika MIME type mismatch"
     else:
         assert magika_result is None or magika_result.output.mime_type is None
     mock_magika_instance.identify_path.assert_called_once_with(file_path)
+
 
 @pytest.mark.parametrize(
     "file_name, expected_handler_type, mime_type, magika_mime_type",
@@ -61,14 +64,14 @@ def test_get_mimetype(
         (None, JSONHandler, None, None),
     ],
 )
-#@patch("coordextract.factory.get_mimetype")
-#def test_handler_factory(
+# @patch("coordextract.factory.get_mimetype")
+# def test_handler_factory(
 #    mock_get_mimetype: MagicMock,
 #    file_name: Literal["test.gpx", "test.json"] | None,
 #    expected_handler_type: Type[IOHandler],
 #    mime_type: Literal["application/gpx+xml", "application/json"] | None,
 #    magika_mime_type: Literal["text/xml"] | None,
-#) -> None:
+# ) -> None:
 #    """
 #    Test the handler_factory function.
 #
@@ -96,8 +99,8 @@ def test_get_mimetype(
 #        mock_get_mimetype.assert_not_called()
 #
 #
-#@patch("coordextract.factory.get_mimetype")
-#def test_handler_factory_indeterminate_file_type(mock_get_mimetype: MagicMock) -> None:
+# @patch("coordextract.factory.get_mimetype")
+# def test_handler_factory_indeterminate_file_type(mock_get_mimetype: MagicMock) -> None:
 #    """
 #    Test the handler_factory function when the file type is indeterminate.
 #
@@ -113,8 +116,8 @@ def test_get_mimetype(
 #    assert "Could not determine the filetype of" in str(excinfo.value)
 #
 #
-#@patch("coordextract.factory.get_mimetype")
-#def test_handler_factory_unsupported_file_type(mock_get_mimetype: MagicMock) -> None:
+# @patch("coordextract.factory.get_mimetype")
+# def test_handler_factory_unsupported_file_type(mock_get_mimetype: MagicMock) -> None:
 #    """
 #    Test the handler_factory function when the file type is unsupported.
 #
@@ -131,6 +134,7 @@ def test_get_mimetype(
 #    assert "Unsupported file type for" in str(excinfo.value)
 #
 #
+
 
 class MockMagikaResult:
     """A mock class representing the result of a Magika operation.

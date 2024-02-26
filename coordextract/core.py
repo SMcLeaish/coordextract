@@ -1,12 +1,27 @@
+"""
+This module contains the implementation of the CoordExtract class and its subclasses,
+which are used for input/output handling of geographic data files.
+
+The CoordExtract class is an abstract base class that defines the common interface
+for input/output handlers. It provides methods for processing input data and
+processing output data.
+
+The GPXHandler class is a subclass of CoordExtract and provides specific implementation
+for handling GPX files. It includes methods for processing input GPX files and
+raising an error for output processing.
+
+Note: This module requires the Magika library for file type identification.
+
+"""
+
 from typing import Optional, Tuple, Any
 from pathlib import Path
 from abc import ABC, abstractmethod
 import mimetypes
-import os
 import json
-import aiofiles
-import asyncio
 from concurrent.futures import ProcessPoolExecutor
+import asyncio
+import aiofiles
 from lxml import etree
 from magika.magika import Magika  # type: ignore
 from magika.types import MagikaResult  # type: ignore
@@ -17,15 +32,21 @@ class CoordExtract(ABC):
     """Abstract base class for input/output handlers."""
 
     def __init__(
-        self, filepath: Optional[Path] = None, concurrency: Optional[bool] = False
+        self,
+        filepath: Optional[Path] = None,
+        concurrency: Optional[bool] = False,
+        context: Optional[str] = None,
     ):
-        """Initializes the CoordExtract with an optional filename.
+        """Initializes the CoordExtract with optional parameters.
 
         Args:
-            filename (Optional[Path]): The filename to be processed. Defaults to None.
+            filepath (Optional[Path]): The filepath to be processed. Defaults to None.
+            concurrency (Optional[bool]): Flag indicating whether to use concurrency. Defaults to False.
+            context (Optional[str]): Additional context information. Defaults to None.
         """
         self.filename = filepath
         self.concurrency = concurrency
+        self.context = context
 
     @abstractmethod
     async def process_input(self) -> Optional[list[PointModel]]:
@@ -33,8 +54,10 @@ class CoordExtract(ABC):
 
     @abstractmethod
     async def process_output(
-        self, point_models: list[PointModel], indentation: Optional[int] = None
-    ) -> Optional[str]:
+        self,
+        point_models: list[PointModel],
+        indentation: Optional[int] = None,
+    ) -> Optional[str] | list[PointModel]:
         """Abstract method to process output data.
 
         Args:
@@ -49,36 +72,46 @@ class CoordExtract(ABC):
         output_argument: Optional[Path] = None,
         indentation: Optional[int] = None,
         concurrency: Optional[bool] = False,
-    ) -> Optional[str]:
+        context: Optional[str] = None,
+    ) -> Optional[str] | list[PointModel]:
         """Processes a geographic data file and outputs the results to a
         specified file or stdout.
 
-        This function serves as the core processing workflow, invoking input handling to parse and
+        This method serves as the core processing workflow, invoking input handling to parse and
         convert geographic data from the specified input file and then using output handling to
         serialize and write the data to a JSON file or stdout with optional indentation. It provides
         user feedback on the process success or reasons for failure.
 
         Args:
-            inputfile (Path): The path to the input file containing geographic data to be processed.
-            outputfile (Optional[Path]): The path to the output JSON file where the processed data
-            should be saved. If None, the output will be printed to stdout.
-
+            input_argument (Path): The path to the input file containing geographic data to be 
+                processed.
+            output_argument (Optional[Path]): The path to the output JSON file where the processed 
+                data should be saved. If None, the output will be printed to stdout.
             indentation (Optional[int]): The number of spaces used for JSON output indentation.
-            Defaults to None. 
+                Defaults to None.
+            concurrency (Optional[bool]): Flag indicating whether to use concurrency. Defaults to 
+                False.
+            context (Optional[str]): Runtime context information. Defaults to None. If set to cli, 
+                the method will print the output to stdout. If set to None, the method will return 
+                the pydantic models.
+
+        Returns:
+            Optional[str] | list[PointModel]: The processed data as a JSON string or a list of 
+                PointModel objects.
 
         Raises:
             ValueError: If the file type is unsupported or the file type cannot be determined.
-        """
-        input_handler = cls.factory(input_argument, concurrency)
+            """
+        input_handler = cls.factory(input_argument, concurrency, context)
         filehandler_result = await input_handler.process_input()
         if filehandler_result is not None and output_argument is not None:
-            output_handler = cls.factory(output_argument)
+            output_handler = cls.factory(output_argument, concurrency, context)
             if output_argument is not None:
                 output_handler.filename = output_argument
                 await output_handler.process_output(filehandler_result, indentation)
                 return None
         elif filehandler_result is not None:
-            output_handler = cls.factory()
+            output_handler = cls.factory(None, concurrency, context)
             output_str = await output_handler.process_output(
                 filehandler_result, indentation
             )
@@ -93,13 +126,20 @@ class CoordExtract(ABC):
 
     @classmethod
     def factory(
-        cls, filename: Optional[Path] = None, concurrency: Optional[bool] = False
+        cls,
+        filename: Optional[Path] = None,
+        concurrency: Optional[bool] = False,
+        context: Optional[str] = None,
     ) -> "CoordExtract":
         """Factory function to create an appropriate CoordExtract based
         on the file type.
 
         Args:
-            factory_argument (Optional[Path]): The path to the file. Defaults to None.
+            filename (Optional[Path]): The path to the file. Defaults to None.
+            concurrency (Optional[bool]): Flag indicating whether to use concurrency. 
+                Defaults to False.
+            context (Optional[str]): Additional runtime context information. Defaults
+                to None.
 
         Returns:
             CoordExtract: An instance of the appropriate CoordExtract subclass.
@@ -108,7 +148,7 @@ class CoordExtract(ABC):
             ValueError: If the file type is unsupported or the file type cannot be determined.
         """
         if filename is None:
-            return JSONHandler()
+            return JSONHandler(None, concurrency, context)
         mimetype, magika_result = cls._get_mimetype(filename)
         if mimetype is None or magika_result is None:
             raise ValueError(f"Could not determine the filetype of: {filename}")
@@ -118,7 +158,7 @@ class CoordExtract(ABC):
         ):
             return GPXHandler(filename, concurrency)
         if mimetype == "application/json":
-            return JSONHandler(filename)
+            return JSONHandler(filename, concurrency, context)
         raise ValueError(f"Unsupported file type for {filename}")
 
     @staticmethod
@@ -147,10 +187,12 @@ class GPXHandler(CoordExtract):
 
     async def process_input(self) -> list[PointModel]:
         """Processes the input GPX file and returns a list of PointModel
-        objects.
+        objects. If the concurrency is set to tru, the processing is done
+        concurrently using concurrent.futures.ProcessPoolExecutor.
 
         Returns:
-            list[PointModel]: The list of PointModel objects extracted from the GPX file.
+            Optional[list[PointModel]]: The list of PointModel objects extracted from the GPX file,
+            or None if the processing fails.
         """
         if self.concurrency:
             return await self._concurrent_process_gpx(str(self.filename))
@@ -174,14 +216,15 @@ class GPXHandler(CoordExtract):
         )
 
     async def _concurrent_process_gpx(self, gpx_file_path: str) -> list[PointModel]:
-        """Asynchronously reads the contents of a GPX file and returns
-        the raw XML data.
+        """Asynchronously reads the contents of a GPX file with aiofiles and calls 
+        the _parse_gpx method to process the file concurrently using 
+        concurrent.futures.ProcessPoolExecutor.
 
         Args:
             gpx_file_path (str): The file path to the GPX file to be processed.
 
         Returns:
-            bytes: The raw XML data from the GPX file.
+            pointmodels: The list of PointModel objects extracted from the GPX file.
 
         Raises:
             OSError: If an error occurs while reading the file.
@@ -200,14 +243,14 @@ class GPXHandler(CoordExtract):
         return point_models
 
     async def _process_gpx(self, gpx_file_path: str) -> list[PointModel]:
-        """Asynchronously reads the contents of a GPX file and returns
-        the raw XML data.
+        """Asynchronously reads the contents of a GPX file with aiofiles and
+        calls the _parse_gpx method to process the file.
 
         Args:
             gpx_file_path (str): The file path to the GPX file to be processed.
 
         Returns:
-            bytes: The raw XML data from the GPX file.
+            pointmodels: The list of PointModel objects extracted from the GPX file.
 
         Raises:
             OSError: If an error occurs while reading the file.
@@ -222,9 +265,7 @@ class GPXHandler(CoordExtract):
         return point_models
 
     def _parse_gpx(self, concurrent: bool, xml_data: bytes) -> list[PointModel]:
-        """Function that receives a GPX file as input and returns lists
-        of waypoints, trackpoints, and routepoints as tuples of
-        [latitude, longitude].
+        """Function that receives xml data and returns a list of PointModel
 
         Args:
         gpx_file_path (str): Path to the GPX file to be parsed.
@@ -276,7 +317,7 @@ class GPXHandler(CoordExtract):
                 if isinstance(point, (list, tuple)) and len(point) == 3:
                     latitude, longitude, additional_fields = point
                     if concurrent is not None and additional_fields is not None:
-                        additional_fields['concurrency'] = concurrent
+                        additional_fields["concurrency"] = concurrent
                     point_model = PointModel.create_from_gpx_data(
                         point_type, latitude, longitude, additional_fields or {}
                     )
@@ -323,7 +364,7 @@ class JSONHandler(CoordExtract):
 
     async def process_output(
         self, point_models: list[PointModel], indentation: Optional[int] = None
-    ) -> Optional[str]:
+    ) -> Optional[str] | list[PointModel]:
         """Processes the output data and returns the JSON representation
         of the PointModel objects.
 
@@ -339,6 +380,10 @@ class JSONHandler(CoordExtract):
                 point_models, str(self.filename), indentation
             )
             return None
+        elif self.context is None:
+            print("context: ", self.context)
+            return point_models
+        print("context: ", self.context)
         return await self._point_models_to_json(point_models, None, indentation)
 
     async def _point_models_to_json(

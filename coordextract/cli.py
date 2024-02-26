@@ -6,21 +6,22 @@ The CLI provides the following functionality:
 - Converts the coordinates to JSON format
 - Supports writing the JSON output to a file or printing it to the console
 - Supports specifying the indentation level for the JSON output
+- Supports concurrent processing of large datasets using CPU concurrency
 
 Usage:
     python cli.py [OPTIONS]
 
 Options:
-    --file, -f TEXT     The GPX file(s) or directory to process.
-    --out, -o TEXT      Output file or directory.
-    --indent, -i TEXT   Indentation level for the JSON output. Defaults to 2.
+    --input, -i TEXT    The GPX file(s) or directory to process.
+    --output, -o TEXT   Output file or directory.
+    --indent, -n TEXT   Indentation level for the JSON output.
+    --concurrency, -c   Use CPU concurrency for batch processing large datasets.
 """
 
 import sys
 from typing import Optional
 from pathlib import Path
 import asyncio
-import time
 import typer
 from pydantic import ValidationError
 from coordextract import process_coords as pc
@@ -34,6 +35,7 @@ async def process(
     outputfile: Optional[Path],
     indentation: Optional[int],
     concurrency: Optional[bool],
+    context: Optional[str] = "cli",
 ) -> Optional[str]:
     """Asynchronously processes the input file and writes the JSON
     output to a file or prints it to the console.
@@ -42,12 +44,13 @@ async def process(
         inputfile (Path): The input file to process.
         outputfile (Optional[Path]): The output file to write the JSON to.
         indentation (Optional[int]): The indentation level for the JSON output.
+        concurrency (Optional[bool]): Flag indicating whether to use CPU concurrency for batch processing.
 
     Returns:
-        str: The JSON string.
+        Optional[str]: The JSON string if outputfile is None, otherwise None.
     """
 
-    json_str = await pc(inputfile, outputfile, indentation, concurrency)
+    json_str = await pc(inputfile, outputfile, indentation, concurrency, context)
     if json_str is not None:
         print(json_str)
     return None
@@ -105,22 +108,24 @@ def main(
         help="Use cpu concurrency for batch processessing large datasets.",
     ),
 ) -> None:
-    """Accepts a GPX file or directory as input and converts the
-    coordinates to JSON format. The output JSON object contains all
-    points and their corresponding MGRS coordinates.
+    """This module contains a command-line interface (CLI) for processing
+    GPX files and converting coordinates to JSON format.
+
+    The CLI provides the following functionality:
+    - Accepts one or multiple GPX files or a directory as input
+    - Converts the coordinates to JSON format
+    - Supports writing the JSON output to a file or printing it to the console
+    - Supports specifying the indentation level for the JSON output
+    - Supports concurrent processing of large datasets using CPU concurrency
 
     Usage:
-        python cli.py [OPTIONS]
+        coordextract [OPTIONS]
 
-    Options:
-        --file, -f TEXT     The file path to process. Accepted formats: gpx
-        --out, -o TEXT      Accepted formats: json
-        --indent, -i TEXT   Optionally add indentation level to json. Defaults to None.
 
     Args:
-        inputfile (Path): The input GPX file or directory to process.
+        inputfile (Path): The input GPX file(s) or directory to process.
         outputfile (Optional[Path]): The output JSON file for file processing mode.
-        indentation (Optional[int]): The indentation level for the JSON output. Defaults to None.
+        indentation (Optional[int]): The indentation level for the JSON output.
     """
     try:
         if len(inputs) == 1 and inputs[0].is_dir():
