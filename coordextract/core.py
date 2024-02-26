@@ -41,7 +41,8 @@ class CoordExtract(ABC):
 
         Args:
             filepath (Optional[Path]): The filepath to be processed. Defaults to None.
-            concurrency (Optional[bool]): Flag indicating whether to use concurrency. Defaults to False.
+            concurrency (Optional[bool]): Flag indicating whether to use cpu concurrency. 
+            Defaults to False.
             context (Optional[str]): Additional context information. Defaults to None.
         """
         self.filename = filepath
@@ -182,7 +183,7 @@ class CoordExtract(ABC):
 class GPXHandler(CoordExtract):
     """Input/output handler for GPX files."""
 
-    Coordinates = Optional[Tuple[float, float, Optional[dict[str, str | Any]]]]
+    Coordinates = Tuple[float, float, dict[str, str | Any]]
     CoordinatesList = Optional[list[Coordinates]]
 
     async def process_input(self) -> list[PointModel]:
@@ -194,8 +195,6 @@ class GPXHandler(CoordExtract):
             Optional[list[PointModel]]: The list of PointModel objects extracted from the GPX file,
             or None if the processing fails.
         """
-        if self.concurrency:
-            return await self._concurrent_process_gpx(str(self.filename))
         return await self._process_gpx(str(self.filename))
 
     async def process_output(
@@ -215,7 +214,7 @@ class GPXHandler(CoordExtract):
             "Only GPX input is supported, GPX output processing is not supported."
         )
 
-    async def _concurrent_process_gpx(self, gpx_file_path: str) -> list[PointModel]:
+    async def _process_gpx(self, gpx_file_path: str) -> list[PointModel]:
         """Asynchronously reads the contents of a GPX file with aiofiles and calls 
         the _parse_gpx method to process the file concurrently using 
         concurrent.futures.ProcessPoolExecutor.
@@ -229,37 +228,22 @@ class GPXHandler(CoordExtract):
         Raises:
             OSError: If an error occurs while reading the file.
         """
+        async with aiofiles.open(gpx_file_path, "rb") as file:
+            xml_data = await file.read()
+        if self.concurrency:
+            try:
+                loop = asyncio.get_running_loop()
+                with ProcessPoolExecutor() as pool:
+                    concurrent = True
+                    point_models = await loop.run_in_executor(
+                        pool, self._parse_gpx, concurrent, xml_data
+                    )
+            except OSError as e:
+                raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
+            return point_models
         try:
-            async with aiofiles.open(gpx_file_path, "rb") as file:
-                xml_data = await file.read()
-            loop = asyncio.get_running_loop()
-            with ProcessPoolExecutor() as pool:
-                concurrent = True
-                point_models = await loop.run_in_executor(
-                    pool, self._parse_gpx, concurrent, xml_data
-                )
-        except OSError as e:
-            raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
-        return point_models
-
-    async def _process_gpx(self, gpx_file_path: str) -> list[PointModel]:
-        """Asynchronously reads the contents of a GPX file with aiofiles and
-        calls the _parse_gpx method to process the file.
-
-        Args:
-            gpx_file_path (str): The file path to the GPX file to be processed.
-
-        Returns:
-            pointmodels: The list of PointModel objects extracted from the GPX file.
-
-        Raises:
-            OSError: If an error occurs while reading the file.
-        """
-        try:
-            async with aiofiles.open(gpx_file_path, "rb") as file:
-                xml_data = await file.read()
-                concurrent = False
-                point_models = self._parse_gpx(concurrent, xml_data)
+            concurrent = False
+            point_models = self._parse_gpx(concurrent, xml_data)
         except OSError as e:
             raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
         return point_models
@@ -270,7 +254,7 @@ class GPXHandler(CoordExtract):
         Args:
         gpx_file_path (str): Path to the GPX file to be parsed.
         Returns:
-        Three lists of tuples: waypoints, trackpoints, and routepoints.
+        pointmodels: The list of PointModel objects extracted from the GPX file.
         """
         parser = etree.XMLParser(
             resolve_entities=False, no_network=True, huge_tree=False
@@ -310,7 +294,12 @@ class GPXHandler(CoordExtract):
             "trackpoint": trackpoints,
             "routepoint": routepoints,
         }
+        point_models = self._build_point_models(points_with_types, concurrent)
+        return point_models
 
+    def _build_point_models(self, points_with_types:\
+                            dict[str, list[Coordinates | None]],\
+                                concurrent: bool) -> list[PointModel]:
         point_models = []
         for point_type, points in points_with_types.items():
             for point in points:
