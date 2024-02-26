@@ -4,6 +4,8 @@ formats and coordinates systems."""
 from typing import Optional, Any
 from pydantic import BaseModel, field_validator, ConfigDict
 import coordextract.conversion_utils as cu
+
+
 class PointModel(BaseModel):
     """Represents a geographic point with optional name and type,
     latitude and longitude coordinates, and MGRS (Military Grid

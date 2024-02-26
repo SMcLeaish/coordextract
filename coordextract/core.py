@@ -15,8 +15,10 @@ from .point import PointModel
 
 class CoordExtract(ABC):
     """Abstract base class for input/output handlers."""
-    
-    def __init__(self, filepath: Optional[Path] = None, concurrency: Optional[bool] = False):
+
+    def __init__(
+        self, filepath: Optional[Path] = None, concurrency: Optional[bool] = False
+    ):
         """Initializes the CoordExtract with an optional filename.
 
         Args:
@@ -24,7 +26,6 @@ class CoordExtract(ABC):
         """
         self.filename = filepath
         self.concurrency = concurrency
-
 
     @abstractmethod
     async def process_input(self) -> Optional[list[PointModel]]:
@@ -91,7 +92,9 @@ class CoordExtract(ABC):
         return None
 
     @classmethod
-    def factory(cls, filename: Optional[Path] = None, concurrency: Optional[bool]=False) -> "CoordExtract":
+    def factory(
+        cls, filename: Optional[Path] = None, concurrency: Optional[bool] = False
+    ) -> "CoordExtract":
         """Factory function to create an appropriate CoordExtract based
         on the file type.
 
@@ -135,6 +138,7 @@ class CoordExtract(ABC):
         magika_result = m.identify_path(filename)
         return mimetype, magika_result
 
+
 class GPXHandler(CoordExtract):
     """Input/output handler for GPX files."""
 
@@ -169,9 +173,10 @@ class GPXHandler(CoordExtract):
         raise NotImplementedError(
             "Only GPX input is supported, GPX output processing is not supported."
         )
+
     async def _concurrent_process_gpx(self, gpx_file_path: str) -> list[PointModel]:
-        """Asynchronously reads the contents of a GPX file and returns the
-        raw XML data.
+        """Asynchronously reads the contents of a GPX file and returns
+        the raw XML data.
 
         Args:
             gpx_file_path (str): The file path to the GPX file to be processed.
@@ -187,14 +192,16 @@ class GPXHandler(CoordExtract):
                 xml_data = await file.read()
             loop = asyncio.get_running_loop()
             with ProcessPoolExecutor() as pool:
-                point_models = await loop.run_in_executor(pool, self._parse_gpx, xml_data)
+                point_models = await loop.run_in_executor(
+                    pool, self._parse_gpx, xml_data
+                )
         except OSError as e:
             raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
         return point_models
-    
+
     async def _process_gpx(self, gpx_file_path: str) -> list[PointModel]:
-        """Asynchronously reads the contents of a GPX file and returns the
-        raw XML data.
+        """Asynchronously reads the contents of a GPX file and returns
+        the raw XML data.
 
         Args:
             gpx_file_path (str): The file path to the GPX file to be processed.
@@ -212,11 +219,8 @@ class GPXHandler(CoordExtract):
         except OSError as e:
             raise OSError(f"Error accessing file at {gpx_file_path}: {e}") from e
         return point_models
-        
 
-    def _parse_gpx(
-        self, xml_data: bytes
-    ) -> list[PointModel]:
+    def _parse_gpx(self, xml_data: bytes) -> list[PointModel]:
         """Function that receives a GPX file as input and returns lists
         of waypoints, trackpoints, and routepoints as tuples of
         [latitude, longitude].
@@ -230,14 +234,13 @@ class GPXHandler(CoordExtract):
         parser = etree.XMLParser(
             resolve_entities=False, no_network=True, huge_tree=False
         )
-        
+
         if not xml_data.strip():
             raise ValueError("GPX file is empty or unreadable")
         try:
             xml = etree.fromstring(xml_data, parser)
         except etree.XMLSyntaxError as e:
             raise ValueError(f"GPX file contains invalid XML: {e}") from e
-        
 
         root_tag = xml.tag
         namespace_uri = root_tag[root_tag.find("{") + 1 : root_tag.find("}")]
@@ -278,7 +281,7 @@ class GPXHandler(CoordExtract):
                 if point_model is not None:
                     point_models.append(point_model)
         return point_models
-    
+
     def _parse_point(self, point: etree._Element) -> Optional[Coordinates]:
         """Extracts the latitude and longitude from a GPX point element.
 
@@ -300,6 +303,7 @@ class GPXHandler(CoordExtract):
         except ValueError as e:
             raise ValueError(f"Invalid coordinate value encountered: {e}") from e
         return None
+
 
 class JSONHandler(CoordExtract):
     """Input/output handler for JSON files."""

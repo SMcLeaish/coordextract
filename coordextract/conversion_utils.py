@@ -1,7 +1,7 @@
 import math
-from typing import Optional 
+from typing import Optional
 import re
-import mgrs 
+import mgrs
 from mgrs.core import MGRSError
 
 
@@ -25,6 +25,7 @@ def mgrs_to_lat_lon(mgrs_str: str) -> Optional[tuple[float, float]]:
         raise e
     return None
 
+
 def lat_lon_to_mgrs(latitude: float, longitude: float) -> Optional[str]:
     """Converts latitude and longitude to MGRS (Military Grid Reference
     System) coordinates.
@@ -45,6 +46,7 @@ def lat_lon_to_mgrs(latitude: float, longitude: float) -> Optional[str]:
         raise e
     return None
 
+
 def validate_latitude(latitude: float) -> bool:
     """Validates the latitude value.
 
@@ -60,6 +62,7 @@ def validate_latitude(latitude: float) -> bool:
     if math.isnan(latitude) or not -90 <= latitude <= 90:
         return False
     return True
+
 
 def validate_longitude(longitude: float) -> bool:
     """Validates the longitude value.
@@ -77,6 +80,7 @@ def validate_longitude(longitude: float) -> bool:
         return False
     return True
 
+
 def validate_mgrs(mgrs_str: str) -> bool:
     """Validates the MGRS coordinate.
 
@@ -89,9 +93,7 @@ def validate_mgrs(mgrs_str: str) -> bool:
     Raises:
         ValueError: If the MGRS coordinate is invalid.
     """
-    mgrs_reg_ex = (
-        r"^\d{1,2}[^ABIOYZabioyz][A-Za-z]{2}(\d{10}|\d{8}|\d{6}|\d{4}|\d{2})$"
-    )
+    mgrs_reg_ex = r"^\d{1,2}[^ABIOYZabioyz][A-Za-z]{2}(\d{10}|\d{8}|\d{6}|\d{4}|\d{2})$"
     if re.match(mgrs_reg_ex, mgrs_str):
         return True
     return False
