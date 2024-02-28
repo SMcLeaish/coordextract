@@ -9,7 +9,9 @@ from coordextract.core import GPXHandler, JSONHandler
 from coordextract.point import PointModel
 
 
-async def mock_process_gpx_to_point_models(_file_path: str) -> list[PointModel]:
+async def mock_process_gpx_to_point_models(
+    _file_path: str,
+) -> list[PointModel]:
     """Creates a mock call to gpx_to_point_model to create a
     PointModel."""
     mock_point = PointModel(
@@ -22,7 +24,10 @@ async def mock_process_gpx_to_point_models(_file_path: str) -> list[PointModel]:
 
 
 @pytest.mark.asyncio
-@patch("coordextract.iohandler.process_gpx_to_point_models", new_callable=AsyncMock)
+@patch(
+    "coordextract.iohandler.process_gpx_to_point_models",
+    new_callable=AsyncMock,
+)
 async def test_gpxhandler_process_input(mock_process_gpx: MagicMock) -> None:
     """Test case for the `process_input` method of GPXHandler class.
 
@@ -70,7 +75,9 @@ def test_jsonhandler_process_output(mock_to_json: MagicMock) -> None:
     Returns:
         None
     """
-    point_model = PointModel(latitude=0.0, longitude=0.0, mgrs="33TWN1234567890")
+    point_model = PointModel(
+        latitude=0.0, longitude=0.0, mgrs="33TWN1234567890"
+    )
     point_models = [point_model for _ in range(3)]
     handler = JSONHandler(Path("test.json"))
     handler.process_output(point_models, 4)
@@ -88,7 +95,9 @@ def test_jsonhandler_process_output_no_file(mock_to_json: MagicMock) -> None:
     Returns:
         None
     """
-    point_model = PointModel(latitude=0.0, longitude=0.0, mgrs="33TWN1234567890")
+    point_model = PointModel(
+        latitude=0.0, longitude=0.0, mgrs="33TWN1234567890"
+    )
     point_models = [point_model for _ in range(3)]
     handler = JSONHandler(None)
     handler.process_output(point_models, 4)

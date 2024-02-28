@@ -19,7 +19,10 @@ def example_point_models() -> list[PointModel]:
     """
     return [
         PointModel(
-            gpxpoint="waypoint", latitude=0.0, longitude=0.0, mgrs="31U BT 00000 00000"
+            gpxpoint="waypoint",
+            latitude=0.0,
+            longitude=0.0,
+            mgrs="31U BT 00000 00000",
         ),
         PointModel(
             gpxpoint="trackpoint",
@@ -53,7 +56,9 @@ def test_point_models_to_json_to_file(
     assert "31U BT 11111 11111" in content
 
 
-def test_point_models_to_json_to_stdout(example_point_models: list[PointModel]) -> None:
+def test_point_models_to_json_to_stdout(
+    example_point_models: list[PointModel],
+) -> None:
     """Test the function point_models_to_json by checking if the
     generated JSON string contains the expected coordinates.
 
@@ -80,8 +85,12 @@ def test_point_models_to_json_with_indentation(
     Returns:
         None
     """
-    json_str = point_models_to_json(example_point_models, filename=None, indentation=4)
-    assert json_str is not None and '    "mgrs": "31U BT 00000 00000"' in json_str
+    json_str = point_models_to_json(
+        example_point_models, filename=None, indentation=4
+    )
+    assert (
+        json_str is not None and '    "mgrs": "31U BT 00000 00000"' in json_str
+    )
 
 
 @patch("builtins.open", new_callable=mock_open)

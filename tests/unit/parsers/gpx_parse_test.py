@@ -80,10 +80,16 @@ async def test_async_parse_valid_gpx_with_mock() -> None:
         "aiofiles.threadpool.sync_open",
         return_value=MagicMock(return_value=mock_file_obj),
     ):
-        waypoints, trackpoints, routepoints = await async_parse_gpx("dummy_path.gpx")
+        waypoints, trackpoints, routepoints = await async_parse_gpx(
+            "dummy_path.gpx"
+        )
     assert isinstance(waypoints, list), "Should be a list of waypoint tuples"
-    assert isinstance(trackpoints, list), "Should be a list of trackpoint tuples"
-    assert isinstance(routepoints, list), "Should be a list of routepoint tuples"
+    assert isinstance(
+        trackpoints, list
+    ), "Should be a list of trackpoint tuples"
+    assert isinstance(
+        routepoints, list
+    ), "Should be a list of routepoint tuples"
     assert waypoints != [], "Should not be empty"
     assert trackpoints == [], "Should be empty"
     assert routepoints == [], "Should be empty"

@@ -16,7 +16,10 @@ from coordextract.converters.gpx_to_model import process_gpx_to_point_models
         (([], [], []), 0),
     ],
 )
-@patch("coordextract.converters.gpx_to_model.async_parse_gpx", new_callable=AsyncMock)
+@patch(
+    "coordextract.converters.gpx_to_model.async_parse_gpx",
+    new_callable=AsyncMock,
+)
 async def test_process_gpx_to_point_models_with_data(
     mock_async_parse_gpx: AsyncMock,
     return_value: list[tuple[float, float, dict[Any, Any]]],

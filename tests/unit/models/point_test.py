@@ -94,7 +94,9 @@ def test_create_from_gpx_data_success(
     assert point.mgrs == "31U BT 00000 00000"
 
 
-def test_create_from_gpx_data_invalid(invalid_point_data: dict[str, Any]) -> None:
+def test_create_from_gpx_data_invalid(
+    invalid_point_data: dict[str, Any]
+) -> None:
     """Test case for the create_from_gpx_data method of the PointModel
     class when invalid point data is provided.
 
@@ -114,7 +116,10 @@ async def test_create_from_gpx_data_includes_dynamic_fields() -> None:
     """Test case to verify that the create_from_gpx_data method of
     PointModel includes dynamic fields in the created point model
     object."""
-    additional_fields = {"name": "Dynamic Name", "another_field": "Another Value"}
+    additional_fields = {
+        "name": "Dynamic Name",
+        "another_field": "Another Value",
+    }
     point_model = PointModel.create_from_gpx_data(
         "waypoint", 34.12345, -117.12345, additional_fields
     )
@@ -134,7 +139,8 @@ def mock_latlon_to_mgrs(mocker: MockerFixture) -> None:
         None
     """
     mocker.patch(
-        "coordextract.models.point.latlon_to_mgrs", return_value="33TWN1234567890"
+        "coordextract.models.point.latlon_to_mgrs",
+        return_value="33TWN1234567890",
     )
 
 
@@ -207,10 +213,14 @@ def test_longitude_validation(
     """
     if is_valid:
         try:
-            point = PointModel(latitude=0, longitude=longitude, mgrs="33TWN1234567890")
+            point = PointModel(
+                latitude=0, longitude=longitude, mgrs="33TWN1234567890"
+            )
             assert point.longitude == longitude
         except ValidationError:
-            pytest.fail("Unexpected ValidationError for a valid longitude value")
+            pytest.fail(
+                "Unexpected ValidationError for a valid longitude value"
+            )
     else:
         with pytest.raises(ValidationError):
             PointModel(latitude=0, longitude=longitude, mgrs="33TWN1234567890")

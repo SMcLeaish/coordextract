@@ -36,7 +36,9 @@ def mock_mgrs_failure() -> Generator[MagicMock, None, None]:
     raise an MGRSError for invalid inputs."""
     with patch("mgrs.MGRS") as mock_mgrs:
         instance = mock_mgrs.return_value
-        instance.toMGRS.side_effect = MGRSError("Invalid latitude or longitude")
+        instance.toMGRS.side_effect = MGRSError(
+            "Invalid latitude or longitude"
+        )
         yield instance
 
 

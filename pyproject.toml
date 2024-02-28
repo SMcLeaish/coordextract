@@ -35,11 +35,22 @@ docformatter = "^1.7.5"
 pylint-pytest = "^1.1.7"
 pylint-pydantic = "^0.3.2"
 ruff = "^0.2.2"
+pylsp-mypy = "^0.6.8"
+coverage = "^7.4.3"
 
 [tool.mypy]
 strict = true
 mypy_path = "typings"
 files = "coordextract, tests"
+
+[tool.black]
+line-length = 79
+
+[tool.pylsp-mypy]
+enabled = true
+live_mode = true
+strict = true
+mypy_path = "typings"
 
 [tool.poetry.scripts]
 coordextract = "coordextract.cli:app"

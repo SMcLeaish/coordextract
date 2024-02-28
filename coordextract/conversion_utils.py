@@ -93,7 +93,9 @@ def validate_mgrs(mgrs_str: str) -> bool:
     Raises:
         ValueError: If the MGRS coordinate is invalid.
     """
-    mgrs_reg_ex = r"^\d{1,2}[^ABIOYZabioyz][A-Za-z]{2}(\d{10}|\d{8}|\d{6}|\d{4}|\d{2})$"
+    mgrs_reg_ex = (
+        r"^\d{1,2}[^ABIOYZabioyz][A-Za-z]{2}(\d{10}|\d{8}|\d{6}|\d{4}|\d{2})$"
+    )
     if re.match(mgrs_reg_ex, mgrs_str):
         return True
     return False

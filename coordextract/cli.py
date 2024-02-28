@@ -42,15 +42,17 @@ async def process(
 
     Args:
         inputfile (Path): The input file to process.
-        outputfile (Optional[Path]): The output file to write the JSON to.
-        indentation (Optional[int]): The indentation level for the JSON output.
+        outputfile (Optional[Path]): The output file to.
+        indentation (Optional[int]): The JSON indentation level.
         concurrency (Optional[bool]): Flag indicating whether to use CPU concurrency for batch processing.
 
     Returns:
         Optional[str]: The JSON string if outputfile is None, otherwise None.
     """
 
-    json_str = await pc(inputfile, outputfile, indentation, concurrency, context)
+    json_str = await pc(
+        inputfile, outputfile, indentation, concurrency, context
+    )
     if json_str is not None:
         print(json_str)
     return None
@@ -108,8 +110,8 @@ def main(
         help="Use cpu concurrency for batch processessing large datasets.",
     ),
 ) -> None:
-    """This module contains a command-line interface (CLI) for processing
-    GPX files and converting coordinates to JSON format.
+    """This module contains a command-line interface (CLI) for
+    processing GPX files and converting coordinates to JSON format.
 
     The CLI provides the following functionality:
     - Accepts one or multiple GPX files or a directory as input
@@ -132,15 +134,21 @@ def main(
             inputdir = inputs[0]
             outputdir = output or inputdir / "coordextract_output"
             asyncio.run(
-                process_directory(inputdir, outputdir, indentation, concurrency)
+                process_directory(
+                    inputdir, outputdir, indentation, concurrency
+                )
             )
         else:
             if len(inputs) == 1:
                 inputfile = inputs[0]
-                asyncio.run(process(inputfile, output, indentation, concurrency))
+                asyncio.run(
+                    process(inputfile, output, indentation, concurrency)
+                )
             else:
                 outputdir = output or Path(".")
-                asyncio.run(process_batch(inputs, outputdir, indentation, concurrency))
+                asyncio.run(
+                    process_batch(inputs, outputdir, indentation, concurrency)
+                )
     except (
         ValueError,
         OSError,

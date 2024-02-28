@@ -66,7 +66,9 @@ def test_main_with_bad_value(mock_process: MagicMock) -> None:
 
 @pytest.mark.asyncio
 @patch("coordextract.cli.pc")
-async def test_process_file_with_valid_input_and_output(mock_pc: AsyncMock) -> None:
+async def test_process_file_with_valid_input_and_output(
+    mock_pc: AsyncMock,
+) -> None:
     """Test the process function with valid input and output files."""
     mock_pc.return_value = None
     await mock_pc(Path("dummy.gpx"), Path("dummy.json"), 2)
