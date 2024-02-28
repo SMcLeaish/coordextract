@@ -1,5 +1,5 @@
-"""This module contains a command-line interface (CLI) for processing
-GPX files and converting coordinates to JSON format.
+"""this module contains a command-line interface (cli) for processing
+gpx files and converting coordinates to json format.
 
 The CLI provides the following functionality:
 - Accepts one or multiple GPX files or a directory as input
@@ -15,7 +15,7 @@ Options:
     --input, -i TEXT    The GPX file(s) or directory to process.
     --output, -o TEXT   Output file or directory.
     --indent, -n TEXT   Indentation level for the JSON output.
-    --concurrency, -c   Use CPU concurrency for batch processing large datasets.
+    --concurrency, -c   Use CPU concurrency for batch processing.
 """
 
 import sys
