@@ -146,9 +146,11 @@ class GPXUtils:
         """Extracts the latitude and longitude from a GPX point element.
 
         Args:
-        point: An lxml Element representing a GPX waypoint, trackpoint, or routepoint.
+            point: An lxml Element representing a GPX waypoint, 
+                trackpoint, or routepoint.
         Returns:
-        A tuple of [latitude, longitude] as floats if the attributes are present
+            A tuple of [latitude, longitude] as floats if the attributes 
+                are present
         and valid; None otherwise.
         """
         try:
