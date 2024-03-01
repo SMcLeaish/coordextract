@@ -9,6 +9,18 @@ processing input data and processing output data.
 The GPXHandler class is a subclass of CoordExtract and provides specific
 implementation for handling GPX files. It includes methods for
 processing input GPX files and raising an error for output processing.
+The GPXHandler class uses the GPXUtils class to process GPX files. The
+GPXUtils class is a utility class that provides methods for extracting
+geographic data from GPX files and converting the data to a list of
+PointModel pydantic model objects, using the PointModel class defined in
+the point module.
+
+The JSONHandler class is a subclass of CoordExtract and provides
+specific implementation for handling JSON files. It includes methods for
+raising an error for input processing and processing output JSON files.
+It uses a context parameter to determine whether to write the output to
+a file, print the output to stdout, or return the output as a list of
+PointModel pydantic model objects.
 
 Note: This module requires the Magika library for file type
 identification.
@@ -118,13 +130,12 @@ class CoordExtract(ABC):
             output_handler = CoordExtract._factory(
                 output_argument, concurrency, context
             )
-            if output_argument is not None:
-                output_handler.filename = output_argument
-                await output_handler.process_output(
-                    filehandler_result, indentation
-                )
-                return None
-        elif filehandler_result is not None:
+            output_handler.filename = output_argument
+            await output_handler.process_output(
+                filehandler_result, indentation
+            )
+            return None
+        if filehandler_result is not None:
             output_handler = CoordExtract._factory(None, concurrency, context)
             output_str = await output_handler.process_output(
                 filehandler_result, indentation
@@ -235,7 +246,7 @@ class GPXHandler(CoordExtract):
         Raises:
             NotImplementedError: GPX output processing is not supported.
         """
-        raise NotImplementedError("Only GPX input is supported.")
+        raise NotImplementedError("Only JSON output is supported.")
 
 
 class JSONHandler(CoordExtract):
@@ -248,13 +259,13 @@ class JSONHandler(CoordExtract):
         Raises:
             NotImplementedError: JSON input processing is not supported.
         """
-        raise NotImplementedError("Only JSON output is supported.")
+        raise NotImplementedError("Only GPX input is supported.")
 
     async def process_output(
         self, point_models: list[PointModel], indentation: Optional[int] = None
     ) -> Optional[str] | list[PointModel]:
         """Processes the output data and returns the JSON representation
-        of the PointModel objects.
+        of the PointModel objects, or the PointModel objects as a list.
 
         Args:
             point_models (list[PointModel]): The list of PointModel
@@ -264,7 +275,13 @@ class JSONHandler(CoordExtract):
 
         Returns:
             Optional[str]: The JSON representation of the PointModel
-                objects.
+                objects. If the filename is provided, the JSON string is
+                written to the file and None is returned. If the context
+                is set to cli, the JSON string is printed to stdout and
+                None is returned. If the context is set to None, the
+                PointModel objects are returned as a list. The 
+                PointModel objects are pydantic models and can be 
+                serialized by fastapi.
         """
         if self.filename is not None:
             await self._point_models_to_json(

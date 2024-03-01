@@ -14,10 +14,10 @@ class PointModel(BaseModel):
     Reference System) notation.
 
     Attributes:
-        gpxpoint (str | None): Optional type of the point (e.g., waypoint, trackpoint, routepoint).
         latitude (float): Latitude of the point.
         longitude (float): Longitude of the point.
-        mgrs (str): MGRS notation for the geographic location of the point.
+        mgrs (str): MGRS notation for the geographic location of the 
+            point.
         Accepts a dictionary of extra fields.
     """
 
