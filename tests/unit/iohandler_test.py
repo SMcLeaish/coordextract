@@ -1,7 +1,8 @@
 """This module tests the file handler module."""
 
-from unittest.mock import patch, MagicMock, AsyncMock
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 
 # watch for Magika type stubs to be released

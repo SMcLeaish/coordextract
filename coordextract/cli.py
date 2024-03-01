@@ -18,14 +18,15 @@ Options:
     --concurrency, -c   Use CPU concurrency for batch processing.
 """
 
-import sys
-from typing import Optional
-from pathlib import Path
 import asyncio
+import sys
+from pathlib import Path
+from typing import Optional
+
 import typer
 from pydantic import ValidationError
-from coordextract import process_coords as pc
 
+from coordextract import process_coords as pc
 
 app = typer.Typer()
 
@@ -34,7 +35,7 @@ async def process(
     inputfile: Path,
     outputfile: Optional[Path],
     indentation: Optional[int],
-    concurrency: bool=False,
+    concurrency: bool = False,
     context: Optional[str] = "cli",
 ) -> Optional[str]:
     """Asynchronously processes the input file and writes the JSON
@@ -44,7 +45,7 @@ async def process(
         inputfile (Path): The input file to process.
         outputfile (Optional[Path]): The output file to.
         indentation (Optional[int]): The JSON indentation level.
-        concurrency (Optional[bool]): Flag indicating whether to use 
+        concurrency (Optional[bool]): Flag indicating whether to use
             CPU concurrency for batch processing.
 
     Returns:
@@ -102,15 +103,13 @@ def main(
         None, "--output", "-o", help="Output file or directory."
     ),
     indentation: Optional[int] = typer.Option(
-        None, "--indent", "-i",\
-        help="Indentation level for JSON output."
+        None, "--indent", "-i", help="Indentation level for JSON output."
     ),
     concurrency: bool = typer.Option(
         False,
         "--concurrency",
         "-c",
-        help=\
-        "Use cpu concurrency for batch processessing large datasets.",
+        help="Use cpu concurrency for batch processessing large datasets.",
     ),
 ) -> None:
     """This module contains a command-line interface (CLI) for
@@ -129,9 +128,9 @@ def main(
 
     Args:
         inputfile (Path): The input GPX file(s) or directory to process.
-        outputfile (Optional[Path]): The output JSON file for 
+        outputfile (Optional[Path]): The output JSON file for
             file processing mode.
-        indentation (Optional[int]): The indentation level for the JSON 
+        indentation (Optional[int]): The indentation level for the JSON
             output.
     """
     try:
@@ -143,17 +142,20 @@ def main(
                     inputdir, outputdir, indentation, concurrency
                 )
             )
+            sys.exit(0)
         else:
             if len(inputs) == 1:
                 inputfile = inputs[0]
                 asyncio.run(
                     process(inputfile, output, indentation, concurrency)
                 )
+                sys.exit(0)
             else:
                 outputdir = output or Path(".")
                 asyncio.run(
                     process_batch(inputs, outputdir, indentation, concurrency)
                 )
+                sys.exit(0)
     except (
         ValueError,
         OSError,

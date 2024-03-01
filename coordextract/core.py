@@ -14,16 +14,18 @@ Note: This module requires the Magika library for file type
 identification.
 """
 
-from typing import Optional, Tuple, Any
-from pathlib import Path
-from abc import ABC, abstractmethod
-import mimetypes
 import json
+import mimetypes
+from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Any, Optional, Tuple
+
 import aiofiles
 from magika.magika import Magika  # type: ignore
 from magika.types import MagikaResult  # type: ignore
-from .point import PointModel
+
 from .gpx_utils import GPXUtils
+from .point import PointModel
 
 
 class CoordExtract(ABC):
@@ -196,6 +198,7 @@ class CoordExtract(ABC):
         mimetype, _ = mimetypes.guess_type(str(filename))
         magika_result = m.identify_path(filename)
         return mimetype, magika_result
+
 
 class GPXHandler(CoordExtract):
     """Input/output handler for GPX files."""

@@ -4,15 +4,13 @@ coordextract package."""
 # pylint: disable=R0903
 
 from pathlib import Path
-from typing import Literal, Type, cast, Any
-from unittest.mock import patch, MagicMock
+from typing import Any, Literal, Type, cast
+from unittest.mock import MagicMock, patch
+
 import pytest
 from magika.types import MagikaResult  # type: ignore
-from coordextract.core import (
-    CoordExtract,
-    GPXHandler,
-    JSONHandler,
-)
+
+from coordextract.core import CoordExtract, GPXHandler, JSONHandler
 
 
 @pytest.mark.parametrize(

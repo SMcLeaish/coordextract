@@ -1,6 +1,7 @@
 import math
-from typing import Optional
 import re
+from typing import Optional
+
 import mgrs
 from mgrs.core import MGRSError
 

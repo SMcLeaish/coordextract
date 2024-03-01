@@ -25,9 +25,11 @@ Note: This module requires the pytest, pydantic, and pytest_mock libraries to ru
 
 from typing import Any
 from unittest.mock import MagicMock, patch
+
 import pytest
 from pydantic import ValidationError
 from pytest_mock import MockerFixture
+
 from coordextract.point import PointModel
 
 

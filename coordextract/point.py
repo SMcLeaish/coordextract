@@ -1,8 +1,10 @@
 """Defines data models for representing geographic points in various
 formats and coordinates systems."""
 
-from typing import Optional, Any
-from pydantic import BaseModel, field_validator, ConfigDict
+from typing import Any, Optional
+
+from pydantic import BaseModel, ConfigDict, field_validator
+
 import coordextract.conversion_utils as cu
 
 

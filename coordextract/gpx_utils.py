@@ -1,11 +1,13 @@
 """Module for parsing GPX files and extracting point data."""
 
-from typing import Optional, Any, Tuple
-from pathlib import Path
 import asyncio
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
+from typing import Any, Optional, Tuple
+
 import aiofiles
 from lxml import etree
+
 from .point import PointModel
 
 Coordinates = Tuple[float, float, dict[str, str | Any]]
@@ -146,10 +148,10 @@ class GPXUtils:
         """Extracts the latitude and longitude from a GPX point element.
 
         Args:
-            point: An lxml Element representing a GPX waypoint, 
+            point: An lxml Element representing a GPX waypoint,
                 trackpoint, or routepoint.
         Returns:
-            A tuple of [latitude, longitude] as floats if the attributes 
+            A tuple of [latitude, longitude] as floats if the attributes
                 are present
         and valid; None otherwise.
         """

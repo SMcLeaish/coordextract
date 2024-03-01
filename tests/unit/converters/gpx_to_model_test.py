@@ -1,9 +1,11 @@
 """Tests for GPX point model processing in the `coordextract` package,
 covering parsing, MGRS conversion, and error handling."""
 
-from unittest.mock import AsyncMock, patch
 from typing import Any
+from unittest.mock import AsyncMock, patch
+
 import pytest
+
 from coordextract.converters.gpx_to_model import process_gpx_to_point_models
 
 

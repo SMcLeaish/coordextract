@@ -5,13 +5,14 @@ and the asynchronous parsing of GPX files, covering various scenarios
 like valid inputs, error handling, and unsupported GPX versions.
 """
 
-from unittest.mock import MagicMock, patch
 from typing import Any, Tuple
+from unittest.mock import MagicMock, patch
+
 import aiofiles
 import pytest
 from lxml import etree
-from coordextract.parsers.gpx_parse import async_parse_gpx
-from coordextract.parsers.gpx_parse import parse_point
+
+from coordextract.parsers.gpx_parse import async_parse_gpx, parse_point
 
 
 @pytest.mark.parametrize(

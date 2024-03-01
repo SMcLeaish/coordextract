@@ -1,9 +1,11 @@
 """Unit testing for mgrs conversion module."""
 
 from typing import Generator
-from unittest.mock import patch, MagicMock
-from mgrs.core import MGRSError
+from unittest.mock import MagicMock, patch
+
 import pytest
+from mgrs.core import MGRSError
+
 from coordextract.converters.latlon_to_mgrs import latlon_to_mgrs
 
 
