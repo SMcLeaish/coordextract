@@ -377,11 +377,24 @@ async def test_json_handler_process_output(
 ###############################################################################
 # JSONHandler._point_models_to_json tests
 ###############################################################################
+@pytest.mark.parametrize(
+    "filename, expected_call",
+    [
+        (None, "no_call"),
+        (Path("/path/to/output.json"), "call_with_filename"),
+        (Path("/path/to/output.json"), "raise_error"),
+    ]
+)
 @pytest.mark.asyncio
-async def test_point_models_to_json_with_filename()-> None:
+async def test_point_models_to_json_with_filename(filename: Optional[Path],
+                                                  expected_call: str
+                                                          )-> None:
     """Test the _point_models_to_json function with a filename."""
     mock_file = AsyncMock()
-    mock_file.write = AsyncMock()
+    if expected_call == "raise_error":
+        mock_file.write.side_effect = OSError("Error writing to file")
+    else:
+        mock_file.write = AsyncMock()
 
     with patch('aiofiles.open', create=True) as mock_aiofiles_open:
         mock_aiofiles_open.return_value = AsyncMock(__aenter__=\
@@ -393,12 +406,33 @@ async def test_point_models_to_json_with_filename()-> None:
         for model in point_models:
             model.model_dump.return_value = {"example": "data"}
         pm1, pm2, pm3 = point_models
-        filename = "output.json"
         indentation = 4
 
         handler = JSONHandler()
-        #pylint: disable=protected-access
-        await handler._point_models_to_json([pm1, pm2, pm3], Path(filename),\
-                                            indentation)
-        #pylint: enable=protected-access
-        mock_file.write.assert_awaited()
+        if expected_call == "call_with_filename":
+            #pylint: disable=protected-access
+            await handler._point_models_to_json([pm1, pm2, pm3],\
+                                                filename,\
+                                                indentation)
+            #pylint: enable=protected-access
+            mock_file.write.assert_awaited()
+        elif expected_call == "no_call":
+            result = await handler.\
+            _point_models_to_json( #pylint: disable=protected-access
+                [pm1, pm2, pm3],
+                None,
+                indentation)
+            #pylint: enable=protected-access
+            assert result == json.dumps([pm1.model_dump.return_value,\
+                                         pm2.model_dump.return_value,\
+                                         pm3.model_dump.return_value],\
+                                        indent=indentation)
+            mock_file.write.assert_not_awaited()
+        elif expected_call == "raise_error":
+            with pytest.raises(OSError) as excinfo:
+            #pylint: disable=protected-access
+                await handler._point_models_to_json([pm1, pm2, pm3],\
+                                                   filename,\
+                                                   indentation)
+            #pylint: enable=protected-access
+            assert "Error writing to file" in str(excinfo.value)
