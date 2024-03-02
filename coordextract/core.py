@@ -285,7 +285,7 @@ class JSONHandler(CoordExtract):
         """
         if self.filename is not None:
             await self._point_models_to_json(
-                point_models, str(self.filename), indentation
+                point_models, self.filename, indentation
             )
             return None
         if self.context is None:
@@ -297,7 +297,7 @@ class JSONHandler(CoordExtract):
     async def _point_models_to_json(
         self,
         point_models: list[PointModel],
-        filename: Optional[str] = None,
+        filename: Optional[Path] = None,
         indentation: Optional[int] = None,
     ) -> Optional[str]:
         """Serializes a list of PointModel instances to JSON format and
