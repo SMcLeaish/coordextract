@@ -279,8 +279,8 @@ class JSONHandler(CoordExtract):
                 written to the file and None is returned. If the context
                 is set to cli, the JSON string is printed to stdout and
                 None is returned. If the context is set to None, the
-                PointModel objects are returned as a list. The 
-                PointModel objects are pydantic models and can be 
+                PointModel objects are returned as a list. The
+                PointModel objects are pydantic models and can be
                 serialized by fastapi.
         """
         if self.filename is not None:

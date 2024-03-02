@@ -13,107 +13,124 @@ from magika.types import MagikaResult  # type: ignore
 
 from coordextract.core import CoordExtract, GPXHandler, JSONHandler
 from coordextract.point import PointModel
+
+
 ###############################################################################
 # CoordExtract.process_coords tests
 ###############################################################################
 @pytest.mark.asyncio
-@patch('coordextract.core.CoordExtract._factory')
-@patch('coordextract.point.PointModel')
-async def test_process_coords_valid_input(mock_pointmodel_instance: MagicMock,\
-                                          mock_factory: MagicMock)-> None:
+@patch("coordextract.core.CoordExtract._factory")
+@patch("coordextract.point.PointModel")
+async def test_process_coords_valid_input(
+    mock_pointmodel_instance: MagicMock, mock_factory: MagicMock
+) -> None:
     """Test the process_coords function with valid input."""
-    input_path = Path('/path/to/input')
-    output_path = Path('/path/to/output')
+    input_path = Path("/path/to/input")
+    output_path = Path("/path/to/output")
     indentation = 4
     concurrency = False
-    context = 'some_context'
+    context = "some_context"
     input_handler_mock = AsyncMock()
     input_handler_mock.process_input.return_value = [mock_pointmodel_instance]
     output_handler_mock = AsyncMock()
     output_handler_mock.process_output.return_value = None
     mock_factory.side_effect = [input_handler_mock, output_handler_mock]
-    result = await CoordExtract.process_coords(input_path, output_path,\
-                                               indentation, concurrency,\
-                                               context)
+    result = await CoordExtract.process_coords(
+        input_path, output_path, indentation, concurrency, context
+    )
     assert result is None
-    mock_factory.assert_has_calls([
-        call(input_path, concurrency, context),
-        call(output_path, concurrency, context),
-    ])
+    mock_factory.assert_has_calls(
+        [
+            call(input_path, concurrency, context),
+            call(output_path, concurrency, context),
+        ]
+    )
     input_handler_mock.process_input.assert_awaited_once()
     output_handler_mock.process_output.assert_awaited_once_with(
-        [mock_pointmodel_instance], indentation)
+        [mock_pointmodel_instance], indentation
+    )
 
 
 @pytest.mark.asyncio
-@patch('coordextract.core.CoordExtract._factory')
-@patch('coordextract.point.PointModel')
+@patch("coordextract.core.CoordExtract._factory")
+@patch("coordextract.point.PointModel")
 async def test_process_coords_valid_input_no_output(
-                                          mock_pointmodel_instance: MagicMock,\
-                                          mock_factory: MagicMock)-> None:
+    mock_pointmodel_instance: MagicMock, mock_factory: MagicMock
+) -> None:
     """Test the process_coords function with valid input."""
-    input_path = Path('/path/to/input')
+    input_path = Path("/path/to/input")
     output_path = None
     indentation = 4
     concurrency = False
-    context = 'some_context'
+    context = "some_context"
     input_handler_mock = AsyncMock()
     input_handler_mock.process_input.return_value = [mock_pointmodel_instance]
     output_handler_mock = AsyncMock()
-    output_str='some_output'
+    output_str = "some_output"
     output_handler_mock.process_output.return_value = output_str
     mock_factory.side_effect = [input_handler_mock, output_handler_mock]
-    result = await CoordExtract.process_coords(input_path, output_path,\
-                                               indentation, concurrency,\
-                                               context)
+    result = await CoordExtract.process_coords(
+        input_path, output_path, indentation, concurrency, context
+    )
     assert result == output_str
-    mock_factory.assert_has_calls([
-        call(input_path, concurrency, context),
-        call(output_path, concurrency, context),
-    ])
+    mock_factory.assert_has_calls(
+        [
+            call(input_path, concurrency, context),
+            call(output_path, concurrency, context),
+        ]
+    )
     input_handler_mock.process_input.assert_awaited_once()
     output_handler_mock.process_output.assert_awaited_once_with(
-        [mock_pointmodel_instance], indentation)
+        [mock_pointmodel_instance], indentation
+    )
+
+
 @pytest.mark.asyncio
-@patch('coordextract.core.CoordExtract._factory')
-@patch('coordextract.point.PointModel')
+@patch("coordextract.core.CoordExtract._factory")
+@patch("coordextract.point.PointModel")
 async def test_process_coords_valid_input_no_output_str(
-                                          mock_pointmodel_instance: MagicMock,\
-                                          mock_factory: MagicMock)-> None:
+    mock_pointmodel_instance: MagicMock, mock_factory: MagicMock
+) -> None:
     """Test the process_coords function with valid input."""
-    input_path = Path('/path/to/input')
+    input_path = Path("/path/to/input")
     output_path = None
     indentation = 4
     concurrency = False
-    context = 'some_context'
+    context = "some_context"
     input_handler_mock = AsyncMock()
     input_handler_mock.process_input.return_value = [mock_pointmodel_instance]
     output_handler_mock = AsyncMock()
     output_handler_mock.process_output.return_value = None
     mock_factory.side_effect = [input_handler_mock, output_handler_mock]
-    result = await CoordExtract.process_coords(input_path, output_path,\
-                                               indentation, concurrency,\
-                                               context)
+    result = await CoordExtract.process_coords(
+        input_path, output_path, indentation, concurrency, context
+    )
     assert result is None
-    mock_factory.assert_has_calls([
-        call(input_path, concurrency, context),
-        call(output_path, concurrency, context),
-    ])
+    mock_factory.assert_has_calls(
+        [
+            call(input_path, concurrency, context),
+            call(output_path, concurrency, context),
+        ]
+    )
     input_handler_mock.process_input.assert_awaited_once()
     output_handler_mock.process_output.assert_awaited_once_with(
-        [mock_pointmodel_instance], indentation)
+        [mock_pointmodel_instance], indentation
+    )
+
 
 @pytest.mark.asyncio
-@patch('coordextract.core.CoordExtract._factory')
+@patch("coordextract.core.CoordExtract._factory")
 async def test_process_coords_error_condition(mock_factory: MagicMock) -> None:
     """Test the process_coords function with an error condition."""
-    input_path = Path('/path/to/input')
+    input_path = Path("/path/to/input")
     input_handler_mock = AsyncMock()
     input_handler_mock.process_input.return_value = None
     mock_factory.return_value = input_handler_mock
     with pytest.raises(ValueError):
         await CoordExtract.process_coords(input_path)
     input_handler_mock.process_input.assert_awaited_once()
+
+
 ###############################################################################
 # CoordExtract._get_mimetype tests
 ###############################################################################
@@ -127,6 +144,7 @@ class MockMagikaResult:
     def __init__(self, output: Any) -> None:
         self.output = output
 
+
 class MockOutput:
     """A class representing mock output with a specified MIME type.
 
@@ -136,6 +154,7 @@ class MockOutput:
 
     def __init__(self, mime_type: Any) -> None:
         self.mime_type = mime_type
+
 
 @pytest.mark.parametrize(
     "file_path, expected_mime, magika_mime_type",
@@ -179,6 +198,7 @@ def test_get_mimetype(
         assert magika_result is None or magika_result.output.mime_type is None
     mock_magika_instance.identify_path.assert_called_once_with(file_path)
 
+
 ###############################################################################
 # CoordExtract._factory tests
 ###############################################################################
@@ -192,7 +212,6 @@ def test_get_mimetype(
         (None, JSONHandler, None, None),
     ],
 )
-
 @patch("coordextract.core.CoordExtract._get_mimetype")
 def test_handler_factory(
     mock_get_mimetype: MagicMock,
@@ -200,7 +219,7 @@ def test_handler_factory(
     expected_handler_type: Type[CoordExtract],
     mime_type: Literal["application/gpx+xml", "application/json"] | None,
     magika_mime_type: Literal["text/xml"] | None,
-    ) -> None:
+) -> None:
     """
     Test the handler_factory function.
 
@@ -231,8 +250,9 @@ def test_handler_factory(
 
 
 @patch("coordextract.core.CoordExtract._get_mimetype")
-def test_handler_factory_indeterminate_file_type(mock_get_mimetype: MagicMock)\
-    -> None:
+def test_handler_factory_indeterminate_file_type(
+    mock_get_mimetype: MagicMock,
+) -> None:
     """
     Test the handler_factory function when the file type is indeterminate.
 
@@ -244,15 +264,16 @@ def test_handler_factory_indeterminate_file_type(mock_get_mimetype: MagicMock)\
     """
     mock_get_mimetype.return_value = (None, None)
     with pytest.raises(ValueError) as excinfo:
-        #pylint: disable=protected-access
+        # pylint: disable=protected-access
         CoordExtract._factory(Path("indeterminate.file"))
-        #pylint: enable=protected-access
+        # pylint: enable=protected-access
     assert "Could not determine the filetype of" in str(excinfo.value)
 
 
 @patch("coordextract.core.CoordExtract._get_mimetype")
-def test_handler_factory_unsupported_file_type(mock_get_mimetype: MagicMock)\
-    -> None:
+def test_handler_factory_unsupported_file_type(
+    mock_get_mimetype: MagicMock,
+) -> None:
     """
     Test the handler_factory function when the file type is unsupported.
 
@@ -264,14 +285,16 @@ def test_handler_factory_unsupported_file_type(mock_get_mimetype: MagicMock)\
     """
     mock_get_mimetype.return_value = ("application/unsupported", MagicMock())
     with pytest.raises(ValueError) as excinfo:
-        #pylint: disable=protected-access
+        # pylint: disable=protected-access
         CoordExtract._factory(Path("unsupported.file"))
-        #pylint: enable=protected-access
+        # pylint: enable=protected-access
     assert "Unsupported file type for" in str(excinfo.value)
+
 
 ###############################################################################
 # GPXHandler tests
 ###############################################################################
+
 
 @pytest.mark.asyncio
 @patch("coordextract.core.GPXUtils.process_gpx")
@@ -292,10 +315,12 @@ async def test_gpx_handler_process_input(mock_process_gpx: MagicMock) -> None:
     await gpx_handler.process_input()
     mock_process_gpx.assert_awaited_once_with(file_path)
 
+
 @pytest.mark.asyncio
 @patch("coordextract.point.PointModel")
-async def test_gpx_handler_process_output(mock_pointmodel_instance: MagicMock)\
-    -> None:
+async def test_gpx_handler_process_output(
+    mock_pointmodel_instance: MagicMock,
+) -> None:
     """
     Test the process_output function of the GPXHandler class.
 
@@ -310,9 +335,11 @@ async def test_gpx_handler_process_output(mock_pointmodel_instance: MagicMock)\
         await gpx_handler.process_output([mock_pointmodel_instance], 4)
     assert "Only JSON output is supported." in str(excinfo.value)
 
+
 ###############################################################################
 # JSONHandler tests
 ###############################################################################
+
 
 @pytest.mark.asyncio
 async def test_json_handler_process_input() -> None:
@@ -330,27 +357,32 @@ async def test_json_handler_process_input() -> None:
         await json_handler.process_input()
     assert "Only GPX input is supported." in str(excinfo.value)
 
+
 @pytest.mark.parametrize(
     "file_path, context, filename, expected_call",
     [
-        (Path("/path/to/file.json"), "cli", \
-              Path("/path/to/output.json"), "call_with_filename"),
+        (
+            Path("/path/to/file.json"),
+            "cli",
+            Path("/path/to/output.json"),
+            "call_with_filename",
+        ),
         (Path("/path/to/file.json"), None, None, "no_call"),
-        (Path("/path/to/file.json"), "cli", None,\
-         "call_without_filename"),
-    ]
+        (Path("/path/to/file.json"), "cli", None, "call_without_filename"),
+    ],
 )
 @pytest.mark.asyncio
-@patch("coordextract.core.JSONHandler._point_models_to_json",\
-       new_callable=AsyncMock)
+@patch(
+    "coordextract.core.JSONHandler._point_models_to_json",
+    new_callable=AsyncMock,
+)
 async def test_json_handler_process_output(
-                                           mock_point_models_to_json:\
-                                           MagicMock,
-                                           file_path: Path,
-                                           context: str,
-                                           filename: Optional[Path],
-                                           expected_call: str,
-                                           ) -> None:
+    mock_point_models_to_json: MagicMock,
+    file_path: Path,
+    context: str,
+    filename: Optional[Path],
+    expected_call: str,
+) -> None:
     """
     Test the process_output function of the JSONHandler class.
     """
@@ -358,21 +390,24 @@ async def test_json_handler_process_output(
     pmi = mock_pointmodel_instance
     json_handler = JSONHandler(file_path, False, context)
     json_handler.filename = filename
-    json_str='some_json'
+    json_str = "some_json"
     if expected_call == "call_without_filename":
         mock_point_models_to_json.return_value = json_str
     result = await json_handler.process_output([pmi, pmi, pmi], 4)
     if expected_call == "call_with_filename":
-        mock_point_models_to_json.assert_awaited_once_with([pmi, pmi, pmi],\
-                                                           filename, 4)
+        mock_point_models_to_json.assert_awaited_once_with(
+            [pmi, pmi, pmi], filename, 4
+        )
         assert result is None
     elif expected_call == "call_without_filename":
-        mock_point_models_to_json.assert_awaited_once_with([pmi, pmi, pmi],\
-                                                           None, 4)
+        mock_point_models_to_json.assert_awaited_once_with(
+            [pmi, pmi, pmi], None, 4
+        )
         assert result is json_str
     elif expected_call == "no_call":
         mock_point_models_to_json.assert_not_awaited()
         assert result == [pmi, pmi, pmi]
+
 
 ###############################################################################
 # JSONHandler._point_models_to_json tests
@@ -383,12 +418,12 @@ async def test_json_handler_process_output(
         (None, "no_call"),
         (Path("/path/to/output.json"), "call_with_filename"),
         (Path("/path/to/output.json"), "raise_error"),
-    ]
+    ],
 )
 @pytest.mark.asyncio
-async def test_point_models_to_json_with_filename(filename: Optional[Path],
-                                                  expected_call: str
-                                                          )-> None:
+async def test_point_models_to_json_with_filename(
+    filename: Optional[Path], expected_call: str
+) -> None:
     """Test the _point_models_to_json function with a filename."""
     mock_file = AsyncMock()
     if expected_call == "raise_error":
@@ -396,12 +431,11 @@ async def test_point_models_to_json_with_filename(filename: Optional[Path],
     else:
         mock_file.write = AsyncMock()
 
-    with patch('aiofiles.open', create=True) as mock_aiofiles_open:
-        mock_aiofiles_open.return_value = AsyncMock(__aenter__=\
-                                                    AsyncMock(
-                                                    return_value=mock_file)\
-                                                    , __aexit__=AsyncMock(
-                                                    return_value=None))
+    with patch("aiofiles.open", create=True) as mock_aiofiles_open:
+        mock_aiofiles_open.return_value = AsyncMock(
+            __aenter__=AsyncMock(return_value=mock_file),
+            __aexit__=AsyncMock(return_value=None),
+        )
         point_models = [MagicMock() for _ in range(3)]
         for model in point_models:
             model.model_dump.return_value = {"example": "data"}
@@ -410,29 +444,32 @@ async def test_point_models_to_json_with_filename(filename: Optional[Path],
 
         handler = JSONHandler()
         if expected_call == "call_with_filename":
-            #pylint: disable=protected-access
-            await handler._point_models_to_json([pm1, pm2, pm3],\
-                                                filename,\
-                                                indentation)
-            #pylint: enable=protected-access
+            # pylint: disable=protected-access
+            await handler._point_models_to_json(
+                [pm1, pm2, pm3], filename, indentation
+            )
+            # pylint: enable=protected-access
             mock_file.write.assert_awaited()
         elif expected_call == "no_call":
-            result = await handler.\
-            _point_models_to_json( #pylint: disable=protected-access
-                [pm1, pm2, pm3],
-                None,
-                indentation)
-            #pylint: enable=protected-access
-            assert result == json.dumps([pm1.model_dump.return_value,\
-                                         pm2.model_dump.return_value,\
-                                         pm3.model_dump.return_value],\
-                                        indent=indentation)
+            # pylint: disable=protected-access
+            result = await handler._point_models_to_json(
+                [pm1, pm2, pm3], None, indentation
+            )
+            # pylint: enable=protected-access
+            assert result == json.dumps(
+                [
+                    pm1.model_dump.return_value,
+                    pm2.model_dump.return_value,
+                    pm3.model_dump.return_value,
+                ],
+                indent=indentation,
+            )
             mock_file.write.assert_not_awaited()
         elif expected_call == "raise_error":
             with pytest.raises(OSError) as excinfo:
-            #pylint: disable=protected-access
-                await handler._point_models_to_json([pm1, pm2, pm3],\
-                                                   filename,\
-                                                   indentation)
-            #pylint: enable=protected-access
+                # pylint: disable=protected-access
+                await handler._point_models_to_json(
+                    [pm1, pm2, pm3], filename, indentation
+                )
+            # pylint: enable=protected-access
             assert "Error writing to file" in str(excinfo.value)

@@ -1,5 +1,5 @@
 """This module contains unit tests for the PointModel class in the
-coordextract.models.point module.
+coordextract.point module.
 
 The PointModel class represents a point with latitude and longitude
 coordinates, along with additional fields.
@@ -73,9 +73,9 @@ def invalid_point_data() -> dict[str, Any]:
     }
 
 
-@patch("coordextract.models.point.latlon_to_mgrs")
+@patch("coordextract.conversion_utils.lat_lon_to_mgrs")
 def test_create_from_gpx_data_success(
-    mock_latlon_to_mgrs: MagicMock, valid_point_data: dict[str, Any]
+    mock_lat_lon_to_mgrs: MagicMock, valid_point_data: dict[str, Any]
 ) -> None:
     """Test case for the create_from_gpx_data method of the PointModel
     class.
@@ -87,10 +87,9 @@ def test_create_from_gpx_data_success(
     Returns:
         None
     """
-    mock_latlon_to_mgrs.return_value = "31U BT 00000 00000"
+    mock_lat_lon_to_mgrs.return_value = "31U BT 00000 00000"
     point = PointModel.create_from_gpx_data(**valid_point_data)
     assert point is not None
-    assert point.gpxpoint == valid_point_data["point_type"]
     assert point.latitude == valid_point_data["latitude"]
     assert point.longitude == valid_point_data["longitude"]
     assert point.mgrs == "31U BT 00000 00000"
@@ -141,7 +140,7 @@ def mock_latlon_to_mgrs(mocker: MockerFixture) -> None:
         None
     """
     mocker.patch(
-        "coordextract.models.point.latlon_to_mgrs",
+        "coordextract.conversion_utils.lat_lon_to_mgrs",
         return_value="33TWN1234567890",
     )
 

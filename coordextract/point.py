@@ -16,7 +16,7 @@ class PointModel(BaseModel):
     Attributes:
         latitude (float): Latitude of the point.
         longitude (float): Longitude of the point.
-        mgrs (str): MGRS notation for the geographic location of the 
+        mgrs (str): MGRS notation for the geographic location of the
             point.
         Accepts a dictionary of extra fields.
     """
