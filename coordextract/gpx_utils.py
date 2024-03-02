@@ -129,12 +129,16 @@ class GPXUtils:
                 if isinstance(point, (list, tuple)) and len(point) == 3:
                     latitude, longitude, additional_fields = point
                     if (
+                        point_type is not None
+                        and additional_fields is not None
+                    ):
+                        additional_fields["point_type"] = point_type
+                    if (
                         concurrent is not None
                         and additional_fields is not None
                     ):
-                        additional_fields["concurrency"] = concurrent
-                    point_model = PointModel.create_from_gpx_data(
-                        point_type,
+                        additional_fields["concurrent"] = concurrent
+                    point_model = PointModel.build(
                         latitude,
                         longitude,
                         additional_fields or {},
