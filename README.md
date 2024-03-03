@@ -1,73 +1,56 @@
 # coordextract
-coordextract is a Python library and CLI tool for converting latitude and longitude data from GPX files into Military Grid Reference System (MGRS) coordinates. The library parses GPX files, extracts geographical points, and provides an efficient way to convert and export these points into various formats.
+coordextract is a Python library and CLI tool for converting data from 
+GPX files into pydantic models for further processesing. It was designed 
+to be used as a FastAPI serviceIt adds a MGRS conversion feature to the 
+pydantic model enforces validation using  pydantic validators. The CLI 
+tool can be used to convert GPX files to JSON strings or files. 
 
 ## Features
 
-- Parse GPX files to extract latitude and longitude data 
-- Convert latitude and longitude to MGRS coordinates.
-- Output the converted JSON
+- Batch process GPX files asynchronously with asyncio.
+- Use CPU concurrency if datasets are large.
 - Command-line interface (CLI).
 
 ## Installation
-coordextract uses Poetry for dependency management. To install coordextract, first ensure you have Poetry installed. If not, you can install Poetry by following the instructions on the [Poetry website](https://python-poetry.org/docs/).
-
-Once Poetry is installed, you can install coordextract by cloning the repository and using Poetry:
-
+coordextract uses Poetry for dependency management.
+[Poetry website](https://python-poetry.org/docs/)
 ```shell
 git clone https://github.com/SMcLeaish/coordextract/
 cd coordextract
 poetry install
 ```
-
-## Usage
-
-You can use coordextract as a library by importing it, or as a standalone CLI tool.
-
 ### As a library
 
+The main entry point for the library is the CoordExtract.process_coords()
 ```python
-inputhandler(filename: Path) -> list[PointModel]:
-outputhandler(point_models: list[PointModel], filename: Optional[Path], indentation: Optional[int]
+from coordextract import process_coords
+
+"""process_coords() takes five arguments:
+    - input_file(s): Path - The path to the input GPX file(s).
+    - output_file: Optional(Path) - The path to the output file.
+    - indent: Optional(int) - The number of spaces to indent JSON output. 
+        Default 2.
+    - concurrency: Optional(bool) - Will attempt to spawn multiple processes
+        for batch requests. Default False.
+    - context: Optional(str) - If None a the PointModel will be returned. 
+        If set to cli, output will be JSON to stdout if no output file is 
+        specified. Default None.
+"""
+process_coords('path/to/file.gpx', 'path/to/output.csv', 2, True, 'cli')
 ```
 
 ### As a CLI tool
 
-
-```shell
-coordextract -f 'path/to/your/file.gpx'
-```
-### CLI options
-
-* -f / --file TEXT: The GPX file path to process.
-* -c / --coords TEXT: A comma-separated latitude and longitude string for MGRS conversion. (Default: None)
-* -o / --out TEXT: Specify the output format and destination. (Accepted formats: csv, json, xlsx) (Default: None)
-* --install-completion: Install completion for the current shell.
-* --show-completion: Show completion for the current shell, to copy it or customize the installation.
-* --help: Show help message and exit.
-
-### Dependencies
-
-Install development dependencies with: 
-`pip install -r requirements.txt`
-
-### QA
-
-Testing, linting, and type checking are performed with pytest, pylint, and mypy respectively. To run these checks, use the following commands:
-
-```shell
-pytest
-pylint coordextract
-mypy coordextract
-```
-
-### Formatting
-This project uses Black for code formatting to ensure a consistent code style. To format your code, run:
-```shell
-poetry run black .
-```
+coordextract on the command line takes gpx file(s) as its first input and
+supports the following options:
+`--output-file` - The path to the output file.
+`--indent` - The number of spaces to indent JSON output. Default 2.
+`--concurrency` - Will attempt to spawn multiple processes for batch requests.
+`--help` - Display the help message.
 
 ### License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
- *This repository is mirrored at [https://github.com/SMcLeaish/coordextract/](https://github.com/SMcLeaish/coordextract/) from [https://gitlab.com/smcleaish/coordextract](https://gitlab.com/smcleaish/coordextract) and uses gitlab CI*
+ *This repository is mirrored at [https://github.com/SMcLeaish/coordextract/](https://github.com/SMcLeaish/coordextract/) 
+from [https://gitlab.com/smcleaish/coordextract](https://gitlab.com/smcleaish/coordextract) and uses gitlab CI*

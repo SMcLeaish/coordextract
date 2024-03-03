@@ -1,21 +1,22 @@
-"""this module contains a command-line interface (cli) for processing
-gpx files and converting coordinates to json format.
-
-The CLI provides the following functionality:
-- Accepts one or multiple GPX files or a directory as input
-- Converts the coordinates to JSON format
-- Supports writing the JSON output to a file or printing it to the console
-- Supports specifying the indentation level for the JSON output
-- Supports concurrent processing of large datasets using CPU concurrency
+"""this module contains a cli tool for processing gpx files and 
+converting coordinates to json format using the coordextract library.
 
 Usage:
-    python cli.py [OPTIONS]
+    coordextract [INPUT] [OPTIONS]
 
+Input:
+    The GPX file(s) or directory to process.
 Options:
-    --input, -i TEXT    The GPX file(s) or directory to process.
     --output, -o TEXT   Output file or directory.
     --indent, -n TEXT   Indentation level for the JSON output.
     --concurrency, -c   Use CPU concurrency for batch processing.
+    --help              Show this message and exit. 
+
+Note: If the input is a directory or multiple files, the output
+will be written to a directory with the name coordextract_output
+unless the --output option is specified. If processing multiple
+files, the files will be named using the input file name with the
+suffix .json.
 """
 
 import asyncio
@@ -38,9 +39,10 @@ async def process(
     concurrency: bool = False,
     context: Optional[str] = "cli",
 ) -> Optional[str]:
-    """Asynchronously processes the input file and writes the JSON
-    output to a file or prints it to the console.
-
+    """Processes the input file and writes the JSON output to a file or 
+    prints it to the console.
+    """
+    """
     Args:
         inputfile (Path): The input file to process.
         outputfile (Optional[Path]): The output file to.
@@ -112,26 +114,9 @@ def main(
         help="Use cpu concurrency for batch processessing large datasets.",
     ),
 ) -> None:
-    """This module contains a command-line interface (CLI) for
-    processing GPX files and converting coordinates to JSON format.
-
-    The CLI provides the following functionality:
-    - Accepts one or multiple GPX files or a directory as input
-    - Converts the coordinates to JSON format
-    - Supports writing the JSON output to a file or console output
-    - Supports specifying the indentation level for the JSON output
-    - Supports processing of large datasets using CPU concurrency
-
-    Usage:
-        coordextract [OPTIONS]
-
-
-    Args:
-        inputfile (Path): The input GPX file(s) or directory to process.
-        outputfile (Optional[Path]): The output JSON file for
-            file processing mode.
-        indentation (Optional[int]): The indentation level for the JSON
-            output.
+    """This function contains the logic for the  command-line interface 
+    for processing GPX files and converting coordinates to JSON format 
+    using the coordextract library.
     """
     try:
         if len(inputs) == 1 and inputs[0].is_dir():
