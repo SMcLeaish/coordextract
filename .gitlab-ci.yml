@@ -21,7 +21,7 @@ default:
    cache:
       paths:
          - .cache/pypoetry
-         - venv/
+         - .venv/
       key:
          prefix: project-cache
          files:

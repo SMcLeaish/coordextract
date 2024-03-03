@@ -1,3 +1,6 @@
+![Code Coverage](https://gitlab.com/smcleaish/coordextract/badges/main/coverage.svg)
+![Gitlab CI](https://gitlab.com/smcleaish/coordextract/badges/main/pipeline.svg)
+
 # coordextract
 coordextract is a Python library and CLI tool for converting data from 
 GPX files into pydantic models for further processesing. It was designed 
@@ -58,6 +61,7 @@ supports the following options:
 ### License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
 
  *This repository is mirrored at [https://github.com/SMcLeaish/coordextract/](https://github.com/SMcLeaish/coordextract/) 
 from [https://gitlab.com/smcleaish/coordextract](https://gitlab.com/smcleaish/coordextract) and uses gitlab CI*
