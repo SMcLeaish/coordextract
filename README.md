@@ -18,8 +18,20 @@ The CLI tool will output the model as a JSON string or file.
 - Command-line interface (CLI).
 
 ## Installation
+```shell
+poetry add coordextract
+```
+or
+```shell
+pip install coordextract
+```
+ 
 coordextract uses Poetry for dependency management.
 [Poetry website](https://python-poetry.org/docs/)
+
+To install the development version of coordextract, clone the repository and
+install the dependencies with Poetry.
+
 ```shell
 git clone https://github.com/SMcLeaish/coordextract/
 cd coordextract
