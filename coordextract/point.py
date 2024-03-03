@@ -38,6 +38,7 @@ class PointModel(BaseModel):
         if cu.validate_latitude(v):
             return v
         raise ValueError("Invalid latitude")
+
     @field_validator("longitude")
     def longitude_field_validator(cls, v: float) -> Optional[float]:
         """Validates longitude is in a possible range.
@@ -50,6 +51,7 @@ class PointModel(BaseModel):
         if cu.validate_longitude(v):
             return v
         raise ValueError("Invalid longitude")
+
     @field_validator("mgrs")
     def mgrs_field_validator(cls, v: str) -> Optional[str]:
         """Validates mgrs is in a possible range.
@@ -62,6 +64,7 @@ class PointModel(BaseModel):
         if cu.validate_mgrs(v):
             return v
         raise ValueError("Invalid MGRS coordinate")
+
     @classmethod
     def build(
         cls,

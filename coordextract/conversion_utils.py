@@ -3,6 +3,7 @@ This module contains utility functions for converting between and
 validating MGRS (Military Grid Reference System) and latitude and 
 longitude coordinates.
 """
+
 import math
 import re
 from typing import Optional
@@ -36,8 +37,9 @@ def mgrs_to_lat_lon(mgrs_str: str) -> Optional[tuple[float, float]]:
             raise ValueError("Invalid longitude")
         return lat, lon
     except (MGRSError, ValueError) as e:
-        raise MGRSError("Error converting MGRS to latitude and longitude") \
-        from e
+        raise MGRSError(
+            "Error converting MGRS to latitude and longitude"
+        ) from e
 
 
 def lat_lon_to_mgrs(latitude: float, longitude: float) -> Optional[str]:
@@ -49,7 +51,7 @@ def lat_lon_to_mgrs(latitude: float, longitude: float) -> Optional[str]:
             longitude (float): The longitude value in decimal degrees.
 
     Returns:
-        Optional[str]: The MGRS coordinates as a string, or None if 
+        Optional[str]: The MGRS coordinates as a string, or None if
             there was an error.
     Raises:
         MGRSError: If there is an error converting the latitude and
@@ -66,8 +68,10 @@ def lat_lon_to_mgrs(latitude: float, longitude: float) -> Optional[str]:
             raise ValueError("Invalid MGRS string returned by mgrs.toMGRS")
         return mgrs_str
     except (MGRSError, ValueError) as e:
-        raise MGRSError("Error converting latitude and longitude to MGRS") \
-        from e
+        raise MGRSError(
+            "Error converting latitude and longitude to MGRS"
+        ) from e
+
 
 def validate_latitude(latitude: float) -> bool:
     """Validates the latitude value.
