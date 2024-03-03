@@ -40,28 +40,23 @@ class GPXUtils:
         """
         if gpx_file_path is None:
             raise ValueError("No file path provided")
-        async with aiofiles.open(gpx_file_path, "rb") as file:
-            xml_data = await file.read()
-        if self.concurrency:
-            try:
-                loop = asyncio.get_running_loop()
-                with ProcessPoolExecutor() as pool:
-                    concurrent = True
-                    point_models = await loop.run_in_executor(
-                        pool, GPXUtils.parse_gpx, concurrent, xml_data
-                    )
-            except OSError as e:
-                raise OSError(
-                    f"Error accessing file at {gpx_file_path}: {e}"
-                ) from e
-            return point_models
         try:
-            concurrent = False
-            point_models = GPXUtils.parse_gpx(concurrent, xml_data)
+            async with aiofiles.open(gpx_file_path, "rb") as file:
+                xml_data = await file.read()
         except OSError as e:
             raise OSError(
                 f"Error accessing file at {gpx_file_path}: {e}"
             ) from e
+        if self.concurrency:
+            loop = asyncio.get_running_loop()
+            with ProcessPoolExecutor() as pool:
+                concurrent = True
+                point_models = await loop.run_in_executor(
+                    pool, GPXUtils.parse_gpx, concurrent, xml_data
+                )
+            return point_models
+        concurrent = False
+        point_models = GPXUtils.parse_gpx(concurrent, xml_data)
         return point_models
 
     @staticmethod
@@ -80,7 +75,7 @@ class GPXUtils:
         )
 
         if not xml_data.strip():
-            raise ValueError("GPX file is empty or unreadable")
+            raise ValueError("GPX data is empty or unreadable")
         try:
             xml = etree.fromstring(xml_data, parser)
         except etree.XMLSyntaxError as e:

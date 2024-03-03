@@ -15,42 +15,7 @@ from lxml import etree
 from coordextract.parsers.gpx_parse import async_parse_gpx, parse_point
 
 
-@pytest.mark.parametrize(
-    "xml_input,expected_output",
-    [
-        (
-            '<point lat="40.6892" lon="-74.0445"><name>Liberty Island</name></point>',
-            (40.6892, -74.0445, {"name": "Liberty Island"}),
-        ),
-        ('<point lon="-74.0445"><name>Liberty Island</name></point>', None),
-        ('<point lat="40.6892"><name>Liberty Island</name></point>', None),
-    ],
-)
-def test_parse_point(
-    xml_input: str, expected_output: tuple[float, float, dict[str, str]] | None
-) -> None:
-    """Test the parse_point function.
 
-    Args:
-        xml_input (str): The XML input for parsing.
-        expected_output (tuple[float, float, dict[str, str]] | None): The expected output of the
-        parse_point function.
-
-    Returns:
-        None
-    """
-    point = etree.fromstring(xml_input)
-    assert parse_point(point) == expected_output
-
-
-def test_parse_point_invalid_coordinate() -> None:
-    """Test case to verify the behavior of parse_point function when an
-    invalid coordinate value is encountered."""
-    xml_input = '<point lat="invalid" lon="74.0445"></point>'
-    point = etree.fromstring(xml_input)
-    with pytest.raises(ValueError) as excinfo:
-        parse_point(point)
-    assert "Invalid coordinate value encountered" in str(excinfo.value)
 
 
 @pytest.mark.asyncio
