@@ -1,6 +1,6 @@
 ![Code Coverage](https://gitlab.com/smcleaish/coordextract/badges/main/coverage.svg)
 ![Gitlab CI](https://gitlab.com/smcleaish/coordextract/badges/main/pipeline.svg)
-
+![PyPI](https://img.shields.io/pypi/v/coordextract)
 # coordextract
 coordextract is a Python library and CLI tool for converting data from 
 GPX files into pydantic models for further processesing. It was designed 
@@ -31,16 +31,24 @@ The main entry point for the library is the CoordExtract.process_coords()
 ```python
 from coordextract import process_coords
 
-"""process_coords() takes five arguments:
-    - input_file(s): Path - The path to the input GPX file(s).
-    - output_file: Optional(Path) - The path to the output file.
-    - indent: Optional(int) - The number of spaces to indent JSON output. 
-        Default 2.
-    - concurrency: Optional(bool) - Will attempt to spawn multiple processes
-        for batch requests. Default False.
-    - context: Optional(str) - If None a the PointModel will be returned. 
-        If set to cli, output will be JSON to stdout if no output file is 
-        specified. Default None.
+"""
+
+process_coords() takes five arguments:
+
+- input_file(s): Path - The path to the input GPX file(s).
+
+- output_file: Optional(Path) - The path to the output file.
+
+- indent: Optional(int) - The number of spaces to indent JSON output. 
+    Default 2.
+
+- concurrency: Optional(bool) - Will attempt to spawn multiple processes
+    for batch requests. Default False.
+
+- context: Optional(str) - If None a the PointModel will be returned. 
+    If set to cli, output will be JSON to stdout if no output file is 
+    specified. Default None.
+
 """
 process_coords('path/to/file.gpx', 'path/to/output.csv', 2, True, 'cli')
 ```
