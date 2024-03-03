@@ -7,7 +7,6 @@ workflow:
 
 stages:
    - prepare
-   - qa
    - test
    - sast
 
@@ -18,7 +17,7 @@ default:
    image: python:3.10
 
 qa:
-   stage: qa
+   stage: test
    script:
       - pip install poetry
       - poetry install
@@ -27,14 +26,6 @@ qa:
       - poetry run black . --check
       - poetry run mypy coordextract
       - poetry run pylint coordextract tests
-
-test:
-   stage: test
-   script:
-      - pip install poetry
-      - poetry install
-      - poetry config virtualenvs.create false
       - poetry run pytest --cov=coordextract --cov-report=xml:coverage.xml --cov-report=term --junitxml=pytest.xml
-
 sast:
    stage: sast
