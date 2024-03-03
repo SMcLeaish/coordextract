@@ -1,22 +1,5 @@
 """this module contains a cli tool for processing gpx files and 
 converting coordinates to json format using the coordextract library.
-
-Usage:
-    coordextract [INPUT] [OPTIONS]
-
-Input:
-    The GPX file(s) or directory to process.
-Options:
-    --output, -o TEXT   Output file or directory.
-    --indent, -n TEXT   Indentation level for the JSON output.
-    --concurrency, -c   Use CPU concurrency for batch processing.
-    --help              Show this message and exit. 
-
-Note: If the input is a directory or multiple files, the output
-will be written to a directory with the name coordextract_output
-unless the --output option is specified. If processing multiple
-files, the files will be named using the input file name with the
-suffix .json.
 """
 
 import asyncio
@@ -41,8 +24,6 @@ async def process(
 ) -> Optional[str]:
     """Processes the input file and writes the JSON output to a file or
     prints it to the console.
-    """
-    """
     Args:
         inputfile (Path): The input file to process.
         outputfile (Optional[Path]): The output file to.
@@ -114,9 +95,13 @@ def main(
         help="Use cpu concurrency for batch processessing large datasets.",
     ),
 ) -> None:
-    """This function contains the logic for the  command-line interface
-    for processing GPX files and converting coordinates to JSON format
-    using the coordextract library.
+    """
+    CLI tool for processing GPX files and converting coordinates to JSON
+    format. If a directory is provided, all GPX files in the directory
+    will be processed. Accepts multiple files as inputs, if no output
+    directory is given the default output directory will be
+    coordextract_output. If one file is given as input and no output
+    file is given, the output will be printed to the console.
     """
     try:
         if len(inputs) == 1 and inputs[0].is_dir():
