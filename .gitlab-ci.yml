@@ -3,10 +3,13 @@ workflow:
    rules:
       - if: $CI_MERGE_REQUEST_ID
         when: always
+      - if: '$CI_COMMIT_BRANCH == "main"'
+        when: always
       - when: never
 
 stages:
    - prepare
+   - qa
    - test
    - sast
 
@@ -14,17 +17,43 @@ include:
    - template: Jobs/SAST.gitlab-ci.yml
 
 default:
-   image: python:3.10
+   image: python:3.11
+   cache:
+      paths:
+         - .cache/pypoetry
+         - venv/
+      key:
+         prefix: project-cache
+         files:
+            - poetry.lock
+
+before_script:
+   - pip install poetry
+   - poetry config virtualenvs.in-project true
+   - poetry config cache-dir .cache/pypoetry
+
 
 qa:
-   stage: test
+   stage: qa
    script:
       - pip install poetry
       - poetry install
-      - poetry run pytest --cov=coordextract --cov-report=xml:coverage.xml --cov-report=term --junitxml=pytest.xml
       - poetry run isort . --check
       - poetry run black . --check
       - poetry run mypy coordextract
       - poetry run pylint coordextract tests
+test:
+   stage: test
+   coverage: /TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/
+   script:
+      - pip install poetry
+      - poetry install
+      - poetry run pytest --cov=coordextract --cov-report=xml:coverage.xml --cov-report=term --junitxml=pytest.xml
+   artifacts:
+      reports:
+         junit: pytest.xml
+         coverage_report:
+            coverage_format: cobertura
+            path: coverage.xml
 sast:
    stage: sast
