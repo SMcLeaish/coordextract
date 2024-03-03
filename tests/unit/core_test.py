@@ -157,16 +157,17 @@ class MockOutput:
 
 
 @pytest.mark.parametrize(
-    "file_path, expected_mime, magika_mime_type",
+    "filename, expected_mime, magika_mime_type",
     [
         (Path("/path/to/file.gpx"), "application/gpx+xml", "text/xml"),
         (Path("/path/to/file.json"), "application/json", None),
     ],
 )
+#@patch('mimetypes.guess_type', return_value = ("application/gpx+xml", None))
 @patch("coordextract.core.Magika")
 def test_get_mimetype(
     mock_magika_class: MagicMock,
-    file_path: Path,
+    filename: Path,
     expected_mime: Literal["application/gpx+xml", "application/json"],
     magika_mime_type: Literal["text/xml", None],
 ) -> None:
@@ -185,8 +186,10 @@ def test_get_mimetype(
     mock_magika_result = MockMagikaResult(output=mock_output)
     mock_magika_instance = mock_magika_class.return_value
     mock_magika_instance.identify_path.return_value = mock_magika_result
+    with patch('mimetypes.guess_type') as mock_guess_type:
+        mock_guess_type.return_value = (expected_mime, None)
     # pylint: disable=protected-access
-    mimetype, magika_result = CoordExtract._get_mimetype(file_path)
+        mimetype, magika_result = CoordExtract._get_mimetype(filename)
     # pylint: enable=protected-access
     magika_result = cast(MagikaResult, magika_result)
     assert mimetype == expected_mime, "MIME type mismatch"
@@ -196,7 +199,7 @@ def test_get_mimetype(
         ), "Magika MIME type mismatch"
     else:
         assert magika_result is None or magika_result.output.mime_type is None
-    mock_magika_instance.identify_path.assert_called_once_with(file_path)
+    mock_magika_instance.identify_path.assert_called_once_with(filename)
 
 
 ###############################################################################

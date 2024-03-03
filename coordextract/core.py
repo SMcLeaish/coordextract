@@ -206,7 +206,7 @@ class CoordExtract(ABC):
                 containing the mimetype and the MagikaResult object.
         """
         m = Magika()
-        mimetype, _ = mimetypes.guess_type(str(filename))
+        mimetype, _ = mimetypes.guess_type(filename)
         magika_result = m.identify_path(filename)
         return mimetype, magika_result
 
