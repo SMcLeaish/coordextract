@@ -163,7 +163,7 @@ class MockOutput:
         (Path("/path/to/file.json"), "application/json", None),
     ],
 )
-#@patch('mimetypes.guess_type', return_value = ("application/gpx+xml", None))
+# @patch('mimetypes.guess_type', return_value = ("application/gpx+xml", None))
 @patch("coordextract.core.Magika")
 def test_get_mimetype(
     mock_magika_class: MagicMock,
@@ -186,9 +186,9 @@ def test_get_mimetype(
     mock_magika_result = MockMagikaResult(output=mock_output)
     mock_magika_instance = mock_magika_class.return_value
     mock_magika_instance.identify_path.return_value = mock_magika_result
-    with patch('mimetypes.guess_type') as mock_guess_type:
+    with patch("mimetypes.guess_type") as mock_guess_type:
         mock_guess_type.return_value = (expected_mime, None)
-    # pylint: disable=protected-access
+        # pylint: disable=protected-access
         mimetype, magika_result = CoordExtract._get_mimetype(filename)
     # pylint: enable=protected-access
     magika_result = cast(MagikaResult, magika_result)
