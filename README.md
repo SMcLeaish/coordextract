@@ -1,9 +1,12 @@
 # coordextract
 coordextract is a Python library and CLI tool for converting data from 
 GPX files into pydantic models for further processesing. It was designed 
-to be used as a FastAPI serviceIt adds a MGRS conversion feature to the 
-pydantic model enforces validation using  pydantic validators. The CLI 
-tool can be used to convert GPX files to JSON strings or files. 
+to be used as a FastAPI service. 
+
+While building the pydantic model it verifies that the points are legitimate 
+and does MGRS conversion which is added to the model as a new field.
+
+The CLI tool will output the model as a JSON string or file. 
 
 ## Features
 
@@ -43,9 +46,13 @@ process_coords('path/to/file.gpx', 'path/to/output.csv', 2, True, 'cli')
 
 coordextract on the command line takes gpx file(s) as its first input and
 supports the following options:
+
 `--output-file` - The path to the output file.
+
 `--indent` - The number of spaces to indent JSON output. Default 2.
+
 `--concurrency` - Will attempt to spawn multiple processes for batch requests.
+
 `--help` - Display the help message.
 
 ### License
