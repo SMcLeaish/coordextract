@@ -21,6 +21,7 @@ qa:
    stage: qa
    script:
       - pip install poetry
+      - poetry install
       - poetry config virtualenvs.create false
       - poetry run black . --check
       - poetry run mypy coordextract
@@ -30,6 +31,7 @@ test:
    stage: test
    script:
       - pip install poetry
+      - poetry install
       - poetry config virtualenvs.create false
       - poetry run pytest --cov=coordextract --cov-report=xml:coverage.xml --cov-report=term --junitxml=pytest.xml
 
