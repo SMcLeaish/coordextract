@@ -4,8 +4,8 @@ It tests various functionalities of the command-line interface (CLI)
 provided by the `coordextract` package.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
 from typing import Generator
 from unittest.mock import AsyncMock, patch
 

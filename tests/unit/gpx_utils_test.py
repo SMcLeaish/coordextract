@@ -1,12 +1,12 @@
 """Tests for GPX point model processing in the `coordextract` package,
 covering parsing, MGRS conversion, and error handling."""
 
-from typing import Optional, Any
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock, patch
+from typing import Any, Optional
+from unittest.mock import AsyncMock, MagicMock, patch
 
-from lxml import etree
 import pytest
+from lxml import etree
 
 from coordextract.gpx_utils import GPXUtils
 from coordextract.point import PointModel

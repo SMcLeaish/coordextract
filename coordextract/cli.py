@@ -39,7 +39,7 @@ async def process(
     concurrency: bool = False,
     context: Optional[str] = "cli",
 ) -> Optional[str]:
-    """Processes the input file and writes the JSON output to a file or 
+    """Processes the input file and writes the JSON output to a file or
     prints it to the console.
     """
     """
@@ -114,8 +114,8 @@ def main(
         help="Use cpu concurrency for batch processessing large datasets.",
     ),
 ) -> None:
-    """This function contains the logic for the  command-line interface 
-    for processing GPX files and converting coordinates to JSON format 
+    """This function contains the logic for the  command-line interface
+    for processing GPX files and converting coordinates to JSON format
     using the coordextract library.
     """
     try:

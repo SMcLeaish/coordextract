@@ -5,8 +5,8 @@ coordextract package."""
 
 import json
 from pathlib import Path
-from typing import Any, Literal, Type, cast, Optional
-from unittest.mock import MagicMock, AsyncMock, patch, call
+from typing import Any, Literal, Optional, Type, cast
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 from magika.types import MagikaResult  # type: ignore

@@ -1,9 +1,10 @@
 """Unit testing for mgrs conversion module."""
 
 from unittest.mock import patch
+
 import pytest
-from pytest import approx
 from mgrs.core import MGRSError
+from pytest import approx
 
 from coordextract.conversion_utils import lat_lon_to_mgrs, mgrs_to_lat_lon
 
