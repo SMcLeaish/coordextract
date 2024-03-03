@@ -1,4 +1,3 @@
-
 """
 Type Stubs for mgrs.core
 
@@ -10,9 +9,8 @@ The stubs are intended to be a minimal representation, focusing only on the part
 are actively used, and may need to be extended if additional functionality from the `mgrs` library is
 utilized in the future.
 """
-from typing import Any
 
-class MGRSError(Exception): ...
-"""
-Exception raised for errors encountered during MGRS conversion operations.
-"""
+class MGRSError(Exception):
+    """
+    Exception raised for errors encountered during MGRS conversion operations.
+    """

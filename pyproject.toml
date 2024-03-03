@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "coordextract"
+version = "0.1.0"
+description = "coordextract is a Python library and CLI tool for converting latitude and longitude data from GPX files into Military Grid Reference System (MGRS) coordinates. The library parses GPX files, extracts geographical points, and provides an efficient way to convert and export these points into various formats."
+authors = ["Sean McLeaish <smcleaish@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+mgrs = "^1.4.6"
+pydantic = "^2.6.1"
+typer = "^0.9.0"
+lxml = "^5.1.0"
+aiofiles = "^23.2.1"
+magika = "^0.5.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+pylint = "^3.0.3"
+pytest = "^8.0.0"
+pytest-asyncio = "^0.23.5"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+lxml-stubs = "^0.5.1"
+mypy-extensions = "^1.0.0"
+types-aiofiles = "^23.2.0.20240106"
+types-colorama = "^0.4.15.20240205"
+types-docutils = "^0.20.0.20240201"
+types-Pygments = "^2.17.0.20240106"
+types-setuptools = "^69.0.0.20240125"
+typing_extensions = "4.9.0"
+black = "^24.2.0"
+docformatter = "^1.7.5"
+pylint-pytest = "^1.1.7"
+pylint-pydantic = "^0.3.2"
+pylsp-mypy = "^0.6.8"
+isort = "^5.13.2"
+
+[tool.mypy]
+strict = true
+mypy_path = "typings"
+files = "coordextract, tests"
+
+[tool.black]
+line-length = 79
+
+[tool.pylsp-mypy]
+enabled = true
+live_mode = true
+strict = true
+mypy_path = "typings"
+
+[tool.poetry.scripts]
+coordextract = "coordextract.cli:app"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,16 +1,56 @@
 # coordextract
+coordextract is a Python library and CLI tool for converting data from 
+GPX files into pydantic models for further processesing. It was designed 
+to be used as a FastAPI serviceIt adds a MGRS conversion feature to the 
+pydantic model enforces validation using  pydantic validators. The CLI 
+tool can be used to convert GPX files to JSON strings or files. 
 
-* Library to convert latitudes and longitudes in json, gpx, kml, csv, or xlsx to mgrs and export as csv, json, or xlsx
+## Features
 
-## Changelog
+- Batch process GPX files asynchronously with asyncio.
+- Use CPU concurrency if datasets are large.
+- Command-line interface (CLI).
 
-### v.0.1.0: 
-* coordextract/parsers/gpx_parse.py : waypoints, trackpoints, routepoints = async_parse_gpx("path/to/your/file.gpx")
-* returns a list of lat, long tuples sorted by waypoints, trackpoints, and routepoints
+## Installation
+coordextract uses Poetry for dependency management.
+[Poetry website](https://python-poetry.org/docs/)
+```shell
+git clone https://github.com/SMcLeaish/coordextract/
+cd coordextract
+poetry install
+```
+### As a library
 
-* coordextract/converters/latlon_to_mgrs_converter.py : latlon_to_mgrs(float, float)
-* returns mgrs as a string
+The main entry point for the library is the CoordExtract.process_coords()
+```python
+from coordextract import process_coords
 
-### TODO
-* conversion for other filetypes: kml, csv, xlsx, json
-* cli tool 
+"""process_coords() takes five arguments:
+    - input_file(s): Path - The path to the input GPX file(s).
+    - output_file: Optional(Path) - The path to the output file.
+    - indent: Optional(int) - The number of spaces to indent JSON output. 
+        Default 2.
+    - concurrency: Optional(bool) - Will attempt to spawn multiple processes
+        for batch requests. Default False.
+    - context: Optional(str) - If None a the PointModel will be returned. 
+        If set to cli, output will be JSON to stdout if no output file is 
+        specified. Default None.
+"""
+process_coords('path/to/file.gpx', 'path/to/output.csv', 2, True, 'cli')
+```
+
+### As a CLI tool
+
+coordextract on the command line takes gpx file(s) as its first input and
+supports the following options:
+`--output-file` - The path to the output file.
+`--indent` - The number of spaces to indent JSON output. Default 2.
+`--concurrency` - Will attempt to spawn multiple processes for batch requests.
+`--help` - Display the help message.
+
+### License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+ *This repository is mirrored at [https://github.com/SMcLeaish/coordextract/](https://github.com/SMcLeaish/coordextract/) 
+from [https://gitlab.com/smcleaish/coordextract](https://gitlab.com/smcleaish/coordextract) and uses gitlab CI*
