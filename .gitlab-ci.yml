@@ -17,7 +17,7 @@ include:
    - template: Jobs/SAST.gitlab-ci.yml
 
 default:
-   image: registry.gitlab.com/smcleaish/coordextract/python_3.11-poetry-ci:latest
+   image: registry.gitlab.com/smcleaish/coordextract/python_3.11-poetry-ci:v1
    cache:
       paths:
          - .cache/pypoetry
