@@ -32,17 +32,6 @@ before_script:
    - poetry config virtualenvs.in-project true
    - poetry config cache-dir .cache/pypoetry
 
-deps:
-   stage: build
-   script:
-      - docker build -t registry.gitlab.com/smcleaish/coordextract/coordextract-python3.11-ci:latest .
-      - docker push registry.gitlab.com/smcleaish/coordextract/coordextract-python3.11-ci:latest 
-   rules:
-     - changes:
-         - Dockerfile
-         - pyproject.toml
-         - poetry.lock
-
 qa:
    stage: qa
    script:
