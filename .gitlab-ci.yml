@@ -17,7 +17,7 @@ include:
    - template: Jobs/SAST.gitlab-ci.yml
 
 default:
-   image: Python:3.11-slim
+   image: python:3.11-slim
    cache:
       paths:
          - .cache/pypoetry
