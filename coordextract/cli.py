@@ -50,6 +50,8 @@ async def process_batch(
     concurrency: bool = False,
 ) -> None:
     """Processes a batch of files concurrently."""
+    files = sorted(files)
+    print(files)
     outputdir.mkdir(parents=True, exist_ok=True)
     tasks = [
         asyncio.create_task(
@@ -68,6 +70,7 @@ async def process_directory(
 ) -> None:
     """Processes all GPX files in a directory."""
     files = [file for file in inputdir.iterdir() if file.suffix == ".gpx"]
+    files = sorted(files)
     await process_batch(files, outputdir, indentation, concurrency)
 
 
