@@ -1,4 +1,4 @@
-.PHONY: test test-debug build-dev
+.PHONY: test test-debug build-dev build shell
 
 test:
 	docker-compose run --rm app sh -c "\
@@ -19,3 +19,20 @@ build-dev:
 		mv dist/*.whl ../coordservice/coordextract-local/ &&\
 		cp dist-tmp/* dist/ &&\
 		rm -rf dist-tmp
+
+build:
+	docker build -t smcleaish/coordextract .
+
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
+
+clean:
+	docker-compose down --volumes --rmi coordextract
+
+shell:
+	docker-compose run --rm app /bin/bash
+
+coordextract: build up

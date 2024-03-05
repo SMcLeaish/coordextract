@@ -205,10 +205,10 @@ class CoordExtract(ABC):
             Tuple[Optional[str], Optional[MagikaResult]]: A tuple
                 containing the mimetype and the MagikaResult object.
         """
-        mimetypes.add_type('application/gpx+xml', '.gpx')
-        mimetypes.add_type('application/json', '.json')
-        mimetypes.add_type('text/csv', '.csv')
-        mimetypes.add_type('application/vnd.google-earth.kml+xml', '.kml')
+        mimetypes.add_type("application/gpx+xml", ".gpx")
+        mimetypes.add_type("application/json", ".json")
+        mimetypes.add_type("text/csv", ".csv")
+        mimetypes.add_type("application/vnd.google-earth.kml+xml", ".kml")
         m = Magika()
         mimetype, _ = mimetypes.guess_type(filename)
         magika_result = m.identify_path(filename)

@@ -225,6 +225,4 @@ async def test_process_directory(
     )
     assert mock_process_batch.await_count == 1
     expected_files = sorted([inputdir / f"file{i}.gpx" for i in range(3)])
-    mock_process_batch.assert_awaited_with(
-        expected_files, outputdir, 2, False
-    )
+    mock_process_batch.assert_awaited_with(expected_files, outputdir, 2, False)
