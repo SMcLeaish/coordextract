@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from coordextract.point import PointModel
+from coordextract.models.point import PointModel
 
 
 @pytest.mark.parametrize(

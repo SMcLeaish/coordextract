@@ -35,9 +35,12 @@ from typing import Any, Optional, Tuple
 import aiofiles
 from magika.magika import Magika  # type: ignore
 from magika.types import MagikaResult  # type: ignore
+from pydantic import BaseModel, FilePath
 
 from .gpx_utils import GPXUtils
-from .point import PointModel
+from .csv_utils import CSVUtils
+from .models.point import PointModel
+from .models.config import ConfigModel
 
 
 class CoordExtract(ABC):
@@ -82,13 +85,8 @@ class CoordExtract(ABC):
         """
 
     @staticmethod
-    async def process_coords(
-        input_argument: Path,
-        output_argument: Optional[Path] = None,
-        indentation: Optional[int] = None,
-        concurrency: bool = False,
-        context: Optional[str] = None,
-    ) -> Optional[str] | list[PointModel]:
+    async def process_coords(args: dict[str, Any], config: ConfigModel) ->\
+        Optional[str] | list[PointModel]:
         """Processes a geographic data file and outputs the results to a
         specified file or stdout.
 
@@ -122,6 +120,12 @@ class CoordExtract(ABC):
             ValueError: If the file type is unsupported or the file type
             cannot be determined.
         """
+        input_argument = args.get('input_argument')
+        output_argument = args.get('output_argument', None)  
+        indentation = args.get('indentation', None)
+        concurrency = args.get('concurrency', False)
+        context = args.get('context', None)
+
         input_handler = CoordExtract._factory(
             input_argument, concurrency, context
         )
@@ -187,6 +191,11 @@ class CoordExtract(ABC):
             and magika_result.output.mime_type == "text/xml"
         ):
             return GPXHandler(filename, concurrency)
+        if (
+            mimetype == "text/csv"
+            and magika_result.output.mime_type == "text/plain"
+        ):
+            return CSVHandler(filename, concurrency, context)
         if mimetype == "application/json":
             return JSONHandler(filename, concurrency, context)
         raise ValueError(f"Unsupported file type for {filename}")
@@ -252,6 +261,38 @@ class GPXHandler(CoordExtract):
         """
         raise NotImplementedError("Only JSON output is supported.")
 
+class CSVHandler(CoordExtract):
+    """Input/output handler for CSV files."""
+    def __init__(
+        self, filename: Path, concurrency: bool, *args: Any, **kwargs: Any
+    ) -> None:
+        super().__init__(filename, concurrency, *args, **kwargs)
+        self.gpx_utils = CSVUtils(concurrency=self.concurrency)
+
+    async def process_input(self) -> list[PointModel]:
+        """Raises a NotImplementedError as CSV input processing is not
+        supported.
+
+        Raises:
+            NotImplementedError: CSV input processing is not supported.
+        """
+        return await self.csv_utils.process_csv(self.filename)
+
+    async def process_output(
+        self, point_models: list[PointModel], indentation: Optional[int] = None
+    ) -> None:
+        """Raises a NotImplementedError as CSV output processing is not
+        supported.
+
+        Args:
+            point_models (list[PointModel]): The data to be processed.
+            indentation (Optional[int]): The indentation level for the
+            output. Defaults to None.
+
+        Raises:
+            NotImplementedError: CSV output processing is not supported.
+        """
+        raise NotImplementedError("Only JSON output is supported.")
 
 class JSONHandler(CoordExtract):
     """Input/output handler for JSON files."""

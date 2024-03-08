@@ -9,7 +9,7 @@ import pytest
 from lxml import etree
 
 from coordextract.gpx_utils import GPXUtils
-from coordextract.point import PointModel
+from coordextract.models.point import PointModel
 
 
 @pytest.fixture

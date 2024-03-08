@@ -12,7 +12,7 @@ import pytest
 from magika.types import MagikaResult  # type: ignore
 
 from coordextract.core import CoordExtract, GPXHandler, JSONHandler
-from coordextract.point import PointModel
+from coordextract.models.point import PointModel
 
 
 ###############################################################################

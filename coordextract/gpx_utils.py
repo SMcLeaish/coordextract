@@ -8,7 +8,7 @@ from typing import Any, Optional, Tuple
 import aiofiles
 from lxml import etree
 
-from .point import PointModel
+from .models.point import PointModel
 
 Coordinates = Tuple[float, float, dict[str, str | Any]]
 CoordinatesList = Optional[list[Coordinates]]
